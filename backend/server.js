@@ -11,6 +11,7 @@ import productRoutes from "./routes/productRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import customerRoutes from "./routes/customerRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import settlementRoutes from "./routes/settlementRoutes.js";
 
 // Config
 dotenv.config();
@@ -56,6 +57,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/admins", adminRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/settlements", settlementRoutes);
 
 // -------------------- Serve Frontend in Production -------------------- //
 // const __filename = fileURLToPath(import.meta.url);

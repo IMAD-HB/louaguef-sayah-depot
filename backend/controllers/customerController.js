@@ -4,7 +4,7 @@ import generateToken from "../utils/generateToken.js";
 // Register
 export const registerCustomer = async (req, res) => {
   try {
-    const { name, username, phoneNumber, tier, password } = req.body;
+    const { name, username, phoneNumber, tier, password, totalDebt } = req.body;
 
     if (!name || !username || !password || password.length < 8) {
       return res.status(400).json({
@@ -23,6 +23,8 @@ export const registerCustomer = async (req, res) => {
       phoneNumber,
       tier,
       password,
+      totalDebt:
+        typeof totalDebt === "number" && totalDebt >= 0 ? totalDebt : 0,
     });
 
     res.status(201).json({
@@ -93,7 +95,7 @@ export const updateCustomer = async (req, res) => {
       return res.status(404).json({ message: "❌ العميل غير موجود" });
     }
 
-    const { name, username, phoneNumber, tier, password } = req.body;
+    const { name, username, phoneNumber, tier, password, totalDebt } = req.body;
 
     if (username && username !== customer.username) {
       const exists = await Customer.findOne({ username });
@@ -106,6 +108,10 @@ export const updateCustomer = async (req, res) => {
     customer.name = name || customer.name;
     customer.phoneNumber = phoneNumber || customer.phoneNumber;
     customer.tier = tier || customer.tier;
+
+    if (typeof totalDebt === "number" && totalDebt >= 0) {
+      customer.totalDebt = totalDebt;
+    }
 
     if (password) {
       if (password.length < 8) {

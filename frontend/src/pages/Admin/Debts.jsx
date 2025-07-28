@@ -10,8 +10,6 @@ const AdminDebtPage = () => {
   const [amounts, setAmounts] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [settledToday, setSettledToday] = useState([]);
-
   const fetchTimeout = useRef(null);
 
   const throttledFetchCustomers = () => {
@@ -49,84 +47,95 @@ const AdminDebtPage = () => {
     );
   });
 
-  const handleSettle = async (id, currentDebt) => {
-    const amount = parseFloat(amounts[id]);
+  const handleSettle = async (cust) => {
+    const amount = parseFloat(amounts[cust._id]);
     if (!amount || amount <= 0) {
       return toast.error("❌ أدخل مبلغًا صالحًا");
     }
-    if (amount > currentDebt) {
+    if (amount > cust.totalDebt) {
       return toast.error("❌ المبلغ أكبر من الدين الحالي");
     }
 
     try {
-      await axios.put(`/customers/${id}/settledebt`, { amount });
-
-      const customer = customers.find((c) => c._id === id);
-      const now = new Date().toLocaleString("fr-FR");
-
-      setSettledToday((prev) => [
-        ...prev,
-        {
-          name: customer.name,
-          username: customer.username,
-          amount: amount.toFixed(2),
-          date: now,
-        },
-      ]);
-
+      await axios.put(`/customers/${cust._id}/settledebt`, { amount });
+      await axios.post("/settlements", {
+        customerId: cust._id,
+        name: cust.name,
+        username: cust.username,
+        amount,
+      });
       toast.success("✅ تم تسوية جزء من الدين");
-      setAmounts({ ...amounts, [id]: "" });
+      setAmounts({ ...amounts, [cust._id]: "" });
       throttledFetchCustomers();
     } catch {
       toast.error("❌ فشل التسوية");
     }
   };
 
-  const generateSettlementsPDF = () => {
-    if (settledToday.length === 0) {
-      return toast.info("ℹ️ لا توجد تسويات اليوم.");
+  const handleDownloadTodaySettlements = async () => {
+    try {
+      const { data } = await axios.get("/settlements/today");
+
+      if (!data.length) {
+        toast.info("ℹ️ لا توجد تسويات لليوم");
+        return;
+      }
+
+      const doc = new jsPDF();
+      doc.setFont("Amiri-Regular", "normal");
+      doc.setFontSize(16);
+
+      // Header
+      doc.text("تسويات اليوم", 105, 15, {
+        align: "center",
+      });
+
+      // Prepare table
+      const tableData = data.map((s, index) => [
+        index + 1,
+        s.name,
+        s.username,
+        s.amount.toFixed(2) + " د.ج",
+        new Date(s.date).toLocaleTimeString("ar-DZ"),
+      ]);
+
+      autoTable(doc, {
+        startY: 25,
+        head: [["#", "الاسم", "اسم المستخدم", "المبلغ", "الوقت"]],
+        body: tableData,
+        styles: {
+          font: "Amiri-Regular",
+          fontSize: 12,
+          halign: "right",
+        },
+        headStyles: {
+          fillColor: [255, 102, 0],
+          font: "Amiri-Regular",
+          fontStyle: "normal",
+        },
+        margin: { horizontal: 10 },
+      });
+
+      // Total footer
+      const total = data.reduce((sum, s) => sum + s.amount, 0);
+      doc.text(
+        `المجموع: ${total.toFixed(2)} د.ج`,
+        105,
+        doc.lastAutoTable.finalY + 10,
+        { align: "center" }
+      );
+
+      // Save with today's date
+      const today = new Date().toISOString().split("T")[0];
+      doc.save(`settlements_${today}.pdf`);
+    } catch (err) {
+      toast.error("❌ فشل تحميل التسويات");
     }
-
-    const doc = new jsPDF();
-    doc.setFont("Amiri-Regular", "normal"); // ✅ fixed
-    doc.setFontSize(16);
-    doc.text("تقرير تسوية ديون اليوم", 105, 15, { align: "center" });
-
-    const rows = settledToday.map((s, idx) => [
-      idx + 1,
-      s.name,
-      s.username,
-      s.amount + " د.ج",
-      s.date,
-    ]);
-
-    autoTable(doc, {
-      startY: 25,
-      head: [["#", "الاسم", "اسم المستخدم", "المبلغ", "التاريخ"]],
-      body: rows,
-      styles: { font: "Amiri-Regular", fontStyle: "normal" },
-      headStyles: {
-        font: "Amiri-Regular",
-        fontStyle: "normal",
-        fillColor: [255, 102, 0],
-      },
-    });
-
-    const today = new Date().toISOString().split("T")[0];
-    doc.save(`settlements-${today}.pdf`);
   };
 
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold text-orange-600 mb-4">ديون العملاء</h2>
-
-      {/* 📥 PDF Button */}
-      <button
-        onClick={generateSettlementsPDF}
-        className="mb-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        تحميل تسويات اليوم
-      </button>
 
       {/* 🔍 Search Input */}
       <input
@@ -137,8 +146,18 @@ const AdminDebtPage = () => {
         className="border p-2 rounded w-full mb-4"
       />
 
+      {/* 📥 Download Button */}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={handleDownloadTodaySettlements}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          تحميل تسويات اليوم
+        </button>
+      </div>
+
       <div className="bg-white rounded shadow p-4">
-        {/* Table view for medium and larger screens */}
+        {/* Table view */}
         <table className="w-full text-right hidden sm:table">
           <thead>
             <tr className="border-b font-semibold text-gray-700">
@@ -184,7 +203,7 @@ const AdminDebtPage = () => {
                   </td>
                   <td>
                     <button
-                      onClick={() => handleSettle(cust._id, cust.totalDebt)}
+                      onClick={() => handleSettle(cust)}
                       className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
                     >
                       تسوية
@@ -196,7 +215,7 @@ const AdminDebtPage = () => {
           </tbody>
         </table>
 
-        {/* Card view for small screens */}
+        {/* Card view */}
         <div className="space-y-4 sm:hidden">
           {filteredCustomers.length === 0 ? (
             <p className="text-center text-gray-500">
@@ -242,7 +261,7 @@ const AdminDebtPage = () => {
                   />
                 </div>
                 <button
-                  onClick={() => handleSettle(cust._id, cust.totalDebt)}
+                  onClick={() => handleSettle(cust)}
                   className="bg-green-600 text-white w-full py-1 rounded hover:bg-green-700 mt-2"
                 >
                   تسوية

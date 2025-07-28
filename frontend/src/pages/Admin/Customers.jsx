@@ -9,6 +9,7 @@ const defaultCustomer = {
   phoneNumber: "",
   tier: "retail",
   password: "",
+  totalDebt: "",
 };
 
 const Customers = () => {
@@ -73,6 +74,7 @@ const Customers = () => {
       phoneNumber: customer.phoneNumber || "",
       tier: customer.tier,
       password: "",
+      totalDebt: customer.totalDebt || 0,
     });
     setEditingId(customer._id);
   };
@@ -138,6 +140,16 @@ const Customers = () => {
             <option value="wholesale">جملة</option>
             <option value="superwholesale">جملة كبرى</option>
           </select>
+          <input
+            type="number"
+            placeholder="الدين (مثال: 0)"
+            value={form.totalDebt}
+            onChange={(e) =>
+              setForm({ ...form, totalDebt: parseFloat(e.target.value) || 0 })
+            }
+            min="0"
+            className="border p-2 rounded"
+          />
           <div className="relative col-span-2">
             <input
               type={showPassword ? "text" : "password"}

@@ -28,11 +28,14 @@ export const generateReceiptPDF = ({ order, customer }) => {
   });
 
   autoTable(doc, {
-    startY: 55,
     head: [["Produit", "Prix Unitaire", "Quantité", "Total"]],
     body: rows,
-    styles: { font: "Amiri-Regular" },
-    headStyles: { font: "Amiri-Regular" },
+    styles: {
+      font: "Amiri-Regular",
+      fontSize: 12,
+      halign: "right",
+    },
+    margin: { top: 55 },
   });
 
   // Totals
