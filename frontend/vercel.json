@@ -1,8 +1,12 @@
 {
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "http://localhost:5000/api/:path*"
+  "version": 2,
+  "build": {
+    "env": {
+      "NODE_VERSION": "18"
     }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://louaguef-sayah-backend.onrender.com/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
