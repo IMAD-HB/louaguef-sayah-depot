@@ -2,8 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
-import path from "path";
-import { fileURLToPath } from "url";
+// import path from "path";
+// import { fileURLToPath } from "url";
 
 // Routes
 import brandRoutes from "./routes/brandRoutes.js";
@@ -45,17 +45,17 @@ app.use("/api/customers", customerRoutes);
 app.use("/api/orders", orderRoutes);
 
 // -------------------- Serve Frontend in Production -------------------- //
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
-if (process.env.NODE_ENV === "production") {
-  const distPath = path.join(__dirname, "../frontend/dist");
-  app.use(express.static(distPath));
+// if (process.env.NODE_ENV === "production") {
+//   const distPath = path.join(__dirname, "../frontend/dist");
+//   app.use(express.static(distPath));
 
-  app.get("/", (req, res) => {
-    res.sendFile(path.resolve(distPath, "index.html"));
-  });
-}
+//   app.get("/", (req, res) => {
+//     res.sendFile(path.resolve(distPath, "index.html"));
+//   });
+// }
 // ---------------------------------------------------------------------- //
 
 // Start Server
