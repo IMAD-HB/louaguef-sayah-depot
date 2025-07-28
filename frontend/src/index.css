@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+/* ========== Global Glossy Orange Theme ========== */
+
+:root {
+  --primary-orange: #ff6b00;
+  --primary-orange-dark: #e65c00;
+  --primary-orange-light: #ffa366;
+  --glossy-gradient: linear-gradient(145deg, #ff6b00, #ffa366);
+  --text-dark: #1e1e1e;
+  --text-light: #ffffff;
+  --border-radius: 12px;
+  --shadow-glossy: 0 4px 10px rgba(255, 107, 0, 0.4);
+}
+
+/* Base styles */
+body {
+  font-family: "Tajawal", sans-serif;
+  background-color: #fef7f3;
+  color: var(--text-dark);
+  direction: rtl;
+}
+
+/* Glossy orange buttons */
+.glossy-button {
+  background: var(--glossy-gradient);
+  color: var(--text-light);
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-glossy);
+  font-weight: bold;
+  transition: 0.3s ease;
+}
+
+.glossy-button:hover {
+  background: var(--primary-orange-dark);
+  transform: scale(1.03);
+}
+
+/* Glossy cards */
+.glossy-card {
+  background: #fff;
+  border-radius: var(--border-radius);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  transition: 0.2s ease;
+}
+
+.glossy-card:hover {
+  box-shadow: 0 8px 20px rgba(255, 107, 0, 0.15);
+}
+
+/* Arabic headings */
+h1, h2, h3, h4 {
+  font-family: "Tajawal", sans-serif;
+  font-weight: 700;
+}
+
+/* Utility: scrollable container */
+.scroll-x {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* Utility: hide scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
