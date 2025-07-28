@@ -178,41 +178,47 @@ const Products = () => {
 
       <form
         onSubmit={handleSubmit}
-        className="grid gap-4 mb-6 bg-white p-4 rounded shadow"
+        className="grid gap-4 mb-6 bg-white p-4 rounded shadow w-full"
       >
-        <input
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="اسم المنتج"
-          required
-          className="border p-2 rounded"
-        />
-        {[1, 2, 3, 4, 5].map((n) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <input
-            key={n}
-            name={`line${n}`}
-            value={formData.description[`line${n}`]}
+            name="name"
+            value={formData.name}
             onChange={handleChange}
-            placeholder={`الوصف - سطر ${n}`}
-            className="border p-2 rounded"
+            placeholder="اسم المنتج"
+            required
+            className="border p-2 rounded w-full"
           />
-        ))}
-        <select
-          name="brand"
-          value={formData.brand}
-          onChange={handleChange}
-          required
-          className="border p-2 rounded"
-        >
-          <option value="">اختر العلامة التجارية</option>
-          {brands.map((b) => (
-            <option key={b._id} value={b._id}>
-              {b.name}
-            </option>
+          <select
+            name="brand"
+            value={formData.brand}
+            onChange={handleChange}
+            required
+            className="border p-2 rounded w-full"
+          >
+            <option value="">اختر العلامة التجارية</option>
+            {brands.map((b) => (
+              <option key={b._id} value={b._id}>
+                {b.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <input
+              key={n}
+              name={`line${n}`}
+              value={formData.description[`line${n}`]}
+              onChange={handleChange}
+              placeholder={`الوصف - سطر ${n}`}
+              className="border p-2 rounded w-full"
+            />
           ))}
-        </select>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <input
             type="number"
             name="retail"
@@ -220,7 +226,7 @@ const Products = () => {
             onChange={handleChange}
             placeholder="سعر التجزئة"
             required
-            className="border p-2 rounded"
+            className="border p-2 rounded w-full"
           />
           <input
             type="number"
@@ -229,7 +235,7 @@ const Products = () => {
             onChange={handleChange}
             placeholder="سعر الجملة"
             required
-            className="border p-2 rounded"
+            className="border p-2 rounded w-full"
           />
           <input
             type="number"
@@ -238,9 +244,10 @@ const Products = () => {
             onChange={handleChange}
             placeholder="سعر الجملة الكبرى"
             required
-            className="border p-2 rounded"
+            className="border p-2 rounded w-full"
           />
         </div>
+
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
@@ -250,7 +257,7 @@ const Products = () => {
                 stock: Math.max(0, Number(formData.stock) - 1),
               })
             }
-            className="bg-gray-200 px-2 py-1 rounded text-lg"
+            className="bg-gray-200 px-3 py-1 rounded text-lg"
           >
             −
           </button>
@@ -267,22 +274,24 @@ const Products = () => {
             onClick={() =>
               setFormData({ ...formData, stock: Number(formData.stock) + 1 })
             }
-            className="bg-gray-200 px-2 py-1 rounded text-lg"
+            className="bg-gray-200 px-3 py-1 rounded text-lg"
           >
             +
           </button>
         </div>
+
         <input
           type="file"
           name="image"
           accept="image/*"
           onChange={handleChange}
-          className="border p-2 rounded"
+          className="border p-2 rounded w-full"
           {...(editId ? {} : { required: true })}
         />
+
         <button
           type="submit"
-          className="bg-orange-600 text-white px-4 py-2 rounded"
+          className="bg-orange-600 text-white px-4 py-2 rounded w-full"
         >
           {editId ? "تحديث المنتج" : "إضافة منتج"}
         </button>
