@@ -10,6 +10,7 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [paidAmount, setPaidAmount] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+  const [customerSearch, setCustomerSearch] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,20 +47,29 @@ const AdminDashboard = () => {
     return product?.prices?.[tier] ?? product?.prices?.retail ?? 0;
   };
 
-  const handleProductChange = (productId, quantity) => {
+  const handleProductChange = (productId, quantity, customPrice) => {
     const qty = Number(quantity);
     const product = products.find((p) => p._id === productId);
-    const unitPrice = getUnitPrice(product);
+    const defaultUnitPrice = getUnitPrice(product);
 
     setSelectedProducts((prev) => {
       const existing = prev.find((p) => p.productId === productId);
       if (qty <= 0) return prev.filter((p) => p.productId !== productId);
+
+      const updated = {
+        productId,
+        quantity: qty,
+        unitPrice:
+          customPrice !== undefined
+            ? Number(customPrice)
+            : existing?.customPrice ?? defaultUnitPrice,
+        ...(customPrice !== undefined && { customPrice: Number(customPrice) }),
+      };
+
       if (existing) {
-        return prev.map((p) =>
-          p.productId === productId ? { ...p, quantity: qty } : p
-        );
+        return prev.map((p) => (p.productId === productId ? updated : p));
       }
-      return [...prev, { productId, quantity: qty, unitPrice }];
+      return [...prev, updated];
     });
   };
 
@@ -143,6 +153,18 @@ const AdminDashboard = () => {
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Customer Search */}
+        <div className="mb-4">
+          <label className="block mb-2">🔍 ابحث عن العميل:</label>
+          <input
+            type="text"
+            className="w-full border rounded p-2"
+            placeholder="مثلاً: أحمد أو شركة..."
+            value={customerSearch}
+            onChange={(e) => setCustomerSearch(e.target.value)}
+          />
+        </div>
+
         {/* Customer Select */}
         <div>
           <label className="block mb-2">العميل:</label>
@@ -156,11 +178,21 @@ const AdminDashboard = () => {
             className="w-full border rounded p-2"
           >
             <option value="">اختر عميلاً</option>
-            {customers.map((c) => (
-              <option key={c._id} value={c._id}>
-                {c.name} ({c.tier})
-              </option>
-            ))}
+            {customers
+              .filter((c) =>
+                c.name.toLowerCase().includes(customerSearch.toLowerCase())
+              )
+              .map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.name} (
+                  {{
+                    retail: "تجزئة",
+                    wholesale: "جملة",
+                    superwholesale: "جملة كبرى",
+                  }[c.tier] || "غير معروف"}
+                  )
+                </option>
+              ))}
           </select>
         </div>
 
@@ -264,42 +296,61 @@ const AdminDashboard = () => {
                 return (
                   <div
                     key={product._id}
-                    className="flex items-center justify-between mb-2 bg-yellow-50 p-2 rounded"
+                    className="bg-yellow-50 p-3 rounded mb-2 space-y-2"
                   >
-                    <span className="flex-1">
-                      {product.name} - {item.unitPrice} دج (المخزون:{" "}
-                      {product.stock})
-                    </span>
+                    <div className="flex justify-between items-center">
+                      <span>
+                        {product.name} - السعر:{" "}
+                        {item.customPrice !== undefined
+                          ? `${item.customPrice} دج (مخصص)`
+                          : `${item.unitPrice} دج`}{" "}
+                        (المخزون: {product.stock})
+                      </span>
 
-                    {/* Quantity Selector UI */}
-                    <div className="flex items-center border rounded px-2 ml-4">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleProductChange(product._id, item.quantity - 1)
-                        }
-                        className="px-2 text-lg font-bold text-orange-600"
-                        disabled={item.quantity <= 0}
-                      >
-                        −
-                      </button>
-                      <input
-                        type="number"
-                        className="w-12 text-center outline-none"
-                        value={item.quantity}
-                        readOnly
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleProductChange(product._id, item.quantity + 1)
-                        }
-                        className="px-2 text-lg font-bold text-orange-600"
-                        disabled={item.quantity >= product.stock}
-                      >
-                        +
-                      </button>
+                      <div className="flex items-center border rounded px-2 ml-4">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleProductChange(product._id, item.quantity - 1)
+                          }
+                          className="px-2 text-lg font-bold text-orange-600"
+                          disabled={item.quantity <= 0}
+                        >
+                          −
+                        </button>
+                        <input
+                          type="number"
+                          className="w-12 text-center outline-none"
+                          value={item.quantity}
+                          readOnly
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleProductChange(product._id, item.quantity + 1)
+                          }
+                          className="px-2 text-lg font-bold text-orange-600"
+                          disabled={item.quantity >= product.stock}
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
+
+                    {/* Custom Price Input */}
+                    <input
+                      type="number"
+                      className="w-full border rounded p-2 mt-1"
+                      placeholder={`سعر مخصص (اختياري)`}
+                      value={item.customPrice ?? ""}
+                      onChange={(e) =>
+                        handleProductChange(
+                          product._id,
+                          item.quantity,
+                          e.target.value || undefined
+                        )
+                      }
+                    />
                   </div>
                 );
               })}

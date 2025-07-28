@@ -1,12 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "../../services/axios";
 import { toast } from "react-toastify";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import "../../utils/amiri";
 
 const AdminDebtPage = () => {
   const [customers, setCustomers] = useState([]);
   const [amounts, setAmounts] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [settledToday, setSettledToday] = useState([]);
 
   const fetchTimeout = useRef(null);
 
@@ -56,6 +60,20 @@ const AdminDebtPage = () => {
 
     try {
       await axios.put(`/customers/${id}/settledebt`, { amount });
+
+      const customer = customers.find((c) => c._id === id);
+      const now = new Date().toLocaleString("fr-FR");
+
+      setSettledToday((prev) => [
+        ...prev,
+        {
+          name: customer.name,
+          username: customer.username,
+          amount: amount.toFixed(2),
+          date: now,
+        },
+      ]);
+
       toast.success("✅ تم تسوية جزء من الدين");
       setAmounts({ ...amounts, [id]: "" });
       throttledFetchCustomers();
@@ -64,9 +82,51 @@ const AdminDebtPage = () => {
     }
   };
 
+  const generateSettlementsPDF = () => {
+    if (settledToday.length === 0) {
+      return toast.info("ℹ️ لا توجد تسويات اليوم.");
+    }
+
+    const doc = new jsPDF();
+    doc.setFont("Amiri-Regular", "normal"); // ✅ fixed
+    doc.setFontSize(16);
+    doc.text("تقرير تسوية ديون اليوم", 105, 15, { align: "center" });
+
+    const rows = settledToday.map((s, idx) => [
+      idx + 1,
+      s.name,
+      s.username,
+      s.amount + " د.ج",
+      s.date,
+    ]);
+
+    autoTable(doc, {
+      startY: 25,
+      head: [["#", "الاسم", "اسم المستخدم", "المبلغ", "التاريخ"]],
+      body: rows,
+      styles: { font: "Amiri-Regular", fontStyle: "normal" },
+      headStyles: {
+        font: "Amiri-Regular",
+        fontStyle: "normal",
+        fillColor: [255, 102, 0],
+      },
+    });
+
+    const today = new Date().toISOString().split("T")[0];
+    doc.save(`settlements-${today}.pdf`);
+  };
+
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold text-orange-600 mb-4">ديون العملاء</h2>
+
+      {/* 📥 PDF Button */}
+      <button
+        onClick={generateSettlementsPDF}
+        className="mb-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        تحميل تسويات اليوم
+      </button>
 
       {/* 🔍 Search Input */}
       <input
@@ -158,11 +218,11 @@ const AdminDebtPage = () => {
                 </div>
                 <div>
                   <span className="font-semibold">الفئة: </span>
-                  {({
+                  {{
                     retail: "تجزئة",
                     wholesale: "جملة",
                     superwholesale: "جملة كبرى",
-                  }[cust.tier] || "غير معروف")}
+                  }[cust.tier] || "غير معروف"}
                 </div>
                 <div>
                   <span className="font-semibold">الدين الحالي: </span>
