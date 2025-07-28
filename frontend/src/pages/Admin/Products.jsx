@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import axios from "../../services/axios";
 import { toast } from "react-toastify";
 
@@ -22,6 +22,8 @@ const Products = () => {
     image: null,
   });
   const [editId, setEditId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const fetchThrottleRef = useRef(null);
 
@@ -52,6 +54,20 @@ const Products = () => {
     throttledFetchProducts();
     fetchBrands();
   }, []);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  const filteredProducts = useMemo(() => {
+    if (!debouncedSearch.trim()) return products;
+    return products.filter((p) =>
+      p.name.toLowerCase().includes(debouncedSearch.toLowerCase())
+    );
+  }, [debouncedSearch, products]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -155,7 +171,7 @@ const Products = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 max-w-screen-md mx-auto">
       <h2 className="text-2xl font-bold text-orange-600 mb-4">
         إدارة المنتجات
       </h2>
@@ -196,7 +212,7 @@ const Products = () => {
             </option>
           ))}
         </select>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <input
             type="number"
             name="retail"
@@ -225,7 +241,7 @@ const Products = () => {
             className="border p-2 rounded"
           />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() =>
@@ -272,9 +288,18 @@ const Products = () => {
         </button>
       </form>
 
+      {/* Search bar */}
+      <input
+        type="text"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="ابحث عن منتج بالاسم..."
+        className="border p-2 rounded w-full mb-6"
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.isArray(products) && products.length > 0 ? (
-          products.map((p) => (
+        {Array.isArray(filteredProducts) && filteredProducts.length > 0 ? (
+          filteredProducts.map((p) => (
             <div key={p._id} className="bg-white rounded shadow p-4">
               <img
                 src={p.image.url}

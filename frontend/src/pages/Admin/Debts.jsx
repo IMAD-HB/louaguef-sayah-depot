@@ -5,6 +5,9 @@ import { toast } from "react-toastify";
 const AdminDebtPage = () => {
   const [customers, setCustomers] = useState([]);
   const [amounts, setAmounts] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
   const fetchTimeout = useRef(null);
 
   const throttledFetchCustomers = () => {
@@ -26,6 +29,21 @@ const AdminDebtPage = () => {
   useEffect(() => {
     throttledFetchCustomers();
   }, []);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [searchTerm]);
+
+  const filteredCustomers = customers.filter((cust) => {
+    const search = debouncedSearch.toLowerCase();
+    return (
+      cust.name.toLowerCase().includes(search) ||
+      cust.username.toLowerCase().includes(search)
+    );
+  });
 
   const handleSettle = async (id, currentDebt) => {
     const amount = parseFloat(amounts[id]);
@@ -50,6 +68,15 @@ const AdminDebtPage = () => {
     <div className="p-4">
       <h2 className="text-2xl font-bold text-orange-600 mb-4">ديون العملاء</h2>
 
+      {/* 🔍 Search Input */}
+      <input
+        type="text"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="ابحث بالاسم أو اسم المستخدم..."
+        className="border p-2 rounded w-full mb-4"
+      />
+
       <div className="bg-white rounded shadow p-4">
         {/* Table view for medium and larger screens */}
         <table className="w-full text-right hidden sm:table">
@@ -64,18 +91,24 @@ const AdminDebtPage = () => {
             </tr>
           </thead>
           <tbody>
-            {customers.length === 0 ? (
+            {filteredCustomers.length === 0 ? (
               <tr>
                 <td colSpan="6" className="text-center py-4 text-gray-500">
                   لا يوجد عملاء لديهم ديون.
                 </td>
               </tr>
             ) : (
-              customers.map((cust) => (
+              filteredCustomers.map((cust) => (
                 <tr key={cust._id} className="border-b">
                   <td className="py-2">{cust.name}</td>
                   <td>{cust.username}</td>
-                  <td>{cust.tier}</td>
+                  <td>
+                    {{
+                      retail: "تجزئة",
+                      wholesale: "جملة",
+                      superwholesale: "جملة كبرى",
+                    }[cust.tier] || "غير معروف"}
+                  </td>
                   <td>{cust.totalDebt.toFixed(2)} د.ج</td>
                   <td>
                     <input
@@ -105,12 +138,12 @@ const AdminDebtPage = () => {
 
         {/* Card view for small screens */}
         <div className="space-y-4 sm:hidden">
-          {customers.length === 0 ? (
+          {filteredCustomers.length === 0 ? (
             <p className="text-center text-gray-500">
               لا يوجد عملاء لديهم ديون.
             </p>
           ) : (
-            customers.map((cust) => (
+            filteredCustomers.map((cust) => (
               <div
                 key={cust._id}
                 className="border rounded p-4 shadow-sm space-y-2 text-sm"
@@ -125,7 +158,11 @@ const AdminDebtPage = () => {
                 </div>
                 <div>
                   <span className="font-semibold">الفئة: </span>
-                  {cust.tier}
+                  {({
+                    retail: "تجزئة",
+                    wholesale: "جملة",
+                    superwholesale: "جملة كبرى",
+                  }[cust.tier] || "غير معروف")}
                 </div>
                 <div>
                   <span className="font-semibold">الدين الحالي: </span>

@@ -19,16 +19,28 @@ const CustomerLayout = () => {
       </header>
 
       <nav className="bg-orange-100 p-3 flex gap-4 justify-center">
-        <Link to="/customer/" className="text-orange-600 font-bold">
+        <Link
+          to="/customer/"
+          className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
+        >
           الصفحة الرئيسية
         </Link>
-        <Link to="/customer/brands" className="text-orange-600 font-bold">
+        <Link
+          to="/customer/brands"
+          className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
+        >
           المنتجات
         </Link>
-        <Link to="/customer/orders" className="text-orange-600 font-bold">
+        <Link
+          to="/customer/orders"
+          className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
+        >
           الطلبات
         </Link>
-        <Link to="/customer/profile" className="text-orange-600 font-bold">
+        <Link
+          to="/customer/profile"
+          className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
+        >
           حسابي
         </Link>
         {cartItems.length > 0 && (
