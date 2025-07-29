@@ -7,6 +7,7 @@ const CustomerProducts = () => {
   const [products, setProducts] = useState([]);
   const [brandName, setBrandName] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true); // 🆕 loading state
 
   const customer = JSON.parse(localStorage.getItem("customerInfo"));
 
@@ -14,6 +15,8 @@ const CustomerProducts = () => {
     const timeoutId = setTimeout(() => {
       const fetchData = async () => {
         try {
+          setLoading(true); // 🆕 start loading
+
           const [productRes, brandRes] = await Promise.all([
             axios.get("/products"),
             axios.get(`/brands/${brandId}`),
@@ -27,6 +30,8 @@ const CustomerProducts = () => {
           setBrandName(brandRes.data.name);
         } catch (err) {
           setError("فشل تحميل المنتجات أو الماركة، يرجى المحاولة لاحقاً.");
+        } finally {
+          setLoading(false); // 🆕 stop loading
         }
       };
 
@@ -46,7 +51,10 @@ const CustomerProducts = () => {
         <p className="text-center text-red-500 font-semibold mb-4">{error}</p>
       )}
 
-      {products.length === 0 && !error ? (
+      {/* 🆕 Loading State */}
+      {loading ? (
+        <p className="text-center text-gray-600 animate-pulse">جارٍ تحميل المنتجات...</p>
+      ) : products.length === 0 && !error ? (
         <p className="text-center text-gray-600">
           لا توجد منتجات حالياً لهذه الماركة.
         </p>

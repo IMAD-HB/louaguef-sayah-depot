@@ -98,13 +98,13 @@ export const createOrder = async (req, res) => {
   }
 };
 
-// UPDATE status
+// Update status
 export const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
 
-    if (!status) {
-      return res.status(400).json({ message: "❌ الحالة مطلوبة" });
+    if (!status || !["pending", "confirmed"].includes(status)) {
+      return res.status(400).json({ message: "❌ الحالة غير صالحة" });
     }
 
     const order = await Order.findById(req.params.id);

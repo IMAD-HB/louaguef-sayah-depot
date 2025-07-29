@@ -7,8 +7,6 @@ import { toast } from "react-toastify";
 const statusLabels = {
   pending: "قيد الانتظار",
   confirmed: "تم التأكيد",
-  delivered: "تم التوصيل",
-  paid: "تم الدفع",
 };
 
 const CustomerOrders = () => {

@@ -18,7 +18,7 @@ const CustomerLayout = () => {
         </button>
       </header>
 
-      <nav className="bg-orange-100 p-3 flex gap-4 justify-center">
+      <nav className="bg-orange-100 p-3 flex flex-wrap gap-2 justify-center px-4">
         <Link
           to="/customer/"
           className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
@@ -46,9 +46,9 @@ const CustomerLayout = () => {
         {cartItems.length > 0 && (
           <Link
             to="/customer/cart"
-            className="text-white bg-orange-500 border border-orange-600 px-3 py-1 rounded font-bold"
+            className="text-white bg-orange-500 border border-orange-600 px-3 py-1 rounded font-bold transition transform hover:scale-105 hover:bg-orange-600 animate-pulse"
           >
-            السلة ({cartItems.reduce((acc, item) => acc + item.quantity, 0)})
+            🛒 السلة ({cartItems.reduce((acc, item) => acc + item.quantity, 0)})
           </Link>
         )}
       </nav>

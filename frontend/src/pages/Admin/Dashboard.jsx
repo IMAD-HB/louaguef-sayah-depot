@@ -63,7 +63,10 @@ const AdminDashboard = () => {
           customPrice !== undefined
             ? Number(customPrice)
             : existing?.customPrice ?? defaultUnitPrice,
-        ...(customPrice !== undefined && { customPrice: Number(customPrice) }),
+        customPrice:
+          customPrice !== undefined
+            ? Number(customPrice)
+            : existing?.customPrice, // persist existing custom price
       };
 
       if (existing) {

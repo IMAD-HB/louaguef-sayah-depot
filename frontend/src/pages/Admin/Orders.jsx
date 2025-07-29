@@ -7,8 +7,6 @@ import { generateReceiptPDF } from "../../utils/generateReceipt";
 const statusLabels = {
   pending: "قيد الانتظار",
   confirmed: "تم التأكيد",
-  delivered: "تم التوصيل",
-  paid: "تم الدفع",
 };
 
 const statusOptions = Object.keys(statusLabels);
