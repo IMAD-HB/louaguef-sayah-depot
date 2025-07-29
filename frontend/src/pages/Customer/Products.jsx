@@ -53,7 +53,9 @@ const CustomerProducts = () => {
 
       {/* 🆕 Loading State */}
       {loading ? (
-        <p className="text-center text-gray-600 animate-pulse">جارٍ تحميل المنتجات...</p>
+        <div className="flex justify-center items-center my-10">
+          <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
       ) : products.length === 0 && !error ? (
         <p className="text-center text-gray-600">
           لا توجد منتجات حالياً لهذه الماركة.

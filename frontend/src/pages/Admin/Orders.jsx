@@ -123,7 +123,9 @@ const OrderList = () => {
 
       <div className="bg-white shadow rounded-lg p-4 overflow-x-auto">
         {loading ? (
-          <p className="text-gray-500">جاري تحميل الطلبات...</p>
+          <div className="flex justify-center items-center py-10">
+            <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
         ) : filtered.length === 0 ? (
           <p className="text-gray-500">لا توجد طلبات مطابقة.</p>
         ) : (

@@ -17,11 +17,14 @@ const Admins = () => {
   const [loading, setLoading] = useState(false);
 
   const fetchAdmins = async () => {
+    setLoading(true); // 🆕
     try {
       const { data } = await axios.get("/admins");
       setAdmins(data);
     } catch (err) {
       toast.error("❌ فشل تحميل المدراء");
+    } finally {
+      setLoading(false); // 🆕
     }
   };
 
@@ -149,7 +152,11 @@ const Admins = () => {
 
       {/* Admins List */}
       <div className="bg-white shadow rounded-lg p-4">
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="flex justify-center my-10">
+            <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : filtered.length === 0 ? (
           <p className="text-gray-500">لا يوجد مشرفين</p>
         ) : (
           <>

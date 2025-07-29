@@ -25,9 +25,9 @@ const ProductDetails = () => {
       };
 
       fetchProduct();
-    }, 300); 
+    }, 300);
 
-    return () => clearTimeout(timeoutId); 
+    return () => clearTimeout(timeoutId);
   }, [id]);
 
   if (error) {
@@ -35,7 +35,11 @@ const ProductDetails = () => {
   }
 
   if (!product) {
-    return <p className="text-center text-gray-600">جاري تحميل المنتج...</p>;
+    return (
+      <div className="flex justify-center items-center my-10">
+        <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
   const price = product.prices?.[customer?.tier] || product.prices?.retail || 0;

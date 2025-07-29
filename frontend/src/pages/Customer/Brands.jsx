@@ -33,7 +33,9 @@ const CustomerBrands = () => {
       </h2>
 
       {loading ? (
-        <p className="text-center text-gray-600 animate-pulse">جارٍ تحميل الماركات...</p>
+        <div className="flex justify-center items-center my-10">
+          <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {brands.map((brand) => (

@@ -18,13 +18,17 @@ const Customers = () => {
   const [form, setForm] = useState(defaultCustomer);
   const [editingId, setEditingId] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const fetchCustomers = async () => {
+    setLoading(true);
     try {
       const { data } = await axios.get("/customers");
       setCustomers(data);
     } catch {
       toast.error("❌ فشل تحميل العملاء");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -195,7 +199,11 @@ const Customers = () => {
       />
 
       <div className="bg-white shadow rounded-lg p-4">
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="flex justify-center my-10">
+            <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : filtered.length === 0 ? (
           <p className="text-gray-500">لا يوجد عملاء</p>
         ) : (
           <table className="w-full text-sm text-right hidden sm:table">

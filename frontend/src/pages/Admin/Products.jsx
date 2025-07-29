@@ -24,6 +24,8 @@ const Products = () => {
   const [editId, setEditId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [loadingBrands, setLoadingBrands] = useState(false);
 
   const fetchThrottleRef = useRef(null);
 
@@ -32,21 +34,27 @@ const Products = () => {
 
     fetchThrottleRef.current = setTimeout(async () => {
       fetchThrottleRef.current = null;
+      setLoadingProducts(true);
       try {
         const { data } = await axios.get("/products");
         setProducts(data);
       } catch (err) {
         toast.error("فشل في تحميل المنتجات");
+      } finally {
+        setLoadingProducts(false);
       }
     }, 300);
   };
 
   const fetchBrands = async () => {
+    setLoadingBrands(true);
     try {
       const { data } = await axios.get("/brands");
       setBrands(Array.isArray(data) ? data : []);
     } catch {
       setBrands([]);
+    } finally {
+      setLoadingBrands(false);
     }
   };
 
@@ -195,8 +203,13 @@ const Products = () => {
             onChange={handleChange}
             required
             className="border p-2 rounded w-full"
+            disabled={loadingBrands}
           >
-            <option value="">اختر العلامة التجارية</option>
+            <option value="">
+              {loadingBrands
+                ? "جاري تحميل العلامات التجارية..."
+                : "اختر العلامة التجارية"}
+            </option>
             {brands.map((b) => (
               <option key={b._id} value={b._id}>
                 {b.name}
@@ -307,7 +320,11 @@ const Products = () => {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.isArray(filteredProducts) && filteredProducts.length > 0 ? (
+        {loadingProducts ? (
+          <div className="col-span-full flex justify-center my-10">
+            <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : Array.isArray(filteredProducts) && filteredProducts.length > 0 ? (
           filteredProducts.map((p) => (
             <div key={p._id} className="bg-white rounded shadow p-4">
               <img

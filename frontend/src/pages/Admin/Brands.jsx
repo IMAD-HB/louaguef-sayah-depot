@@ -9,21 +9,25 @@ const Brands = () => {
   const [preview, setPreview] = useState(null);
   const [editId, setEditId] = useState(null);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchBrands();
-    }, 300); 
+    }, 300);
 
-    return () => clearTimeout(timeoutId); 
+    return () => clearTimeout(timeoutId);
   }, []);
 
   const fetchBrands = async () => {
+    setLoading(true);
     try {
       const { data } = await axios.get("/brands");
       setBrands(data);
     } catch {
       toast.error("❌ فشل تحميل العلامات التجارية");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -157,39 +161,45 @@ const Brands = () => {
         className="mb-4 w-full border p-2 rounded"
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filtered.map((brand) => (
-          <div
-            key={brand._id}
-            className="bg-white shadow rounded p-4 flex justify-between items-center"
-          >
-            <div className="flex items-center gap-4">
-              {brand.logo?.url && (
-                <img
-                  src={brand.logo.url}
-                  alt={brand.name}
-                  className="h-12 w-12 object-contain"
-                />
-              )}
-              <span className="font-medium">{brand.name}</span>
+      {loading ? (
+        <div className="flex justify-center my-10">
+          <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filtered.map((brand) => (
+            <div
+              key={brand._id}
+              className="bg-white shadow rounded p-4 flex justify-between items-center"
+            >
+              <div className="flex items-center gap-4">
+                {brand.logo?.url && (
+                  <img
+                    src={brand.logo.url}
+                    alt={brand.name}
+                    className="h-12 w-12 object-contain"
+                  />
+                )}
+                <span className="font-medium">{brand.name}</span>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => startEdit(brand)}
+                  className="text-blue-600 hover:underline"
+                >
+                  تعديل
+                </button>
+                <button
+                  onClick={() => handleDelete(brand._id)}
+                  className="text-red-600 hover:underline"
+                >
+                  حذف
+                </button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => startEdit(brand)}
-                className="text-blue-600 hover:underline"
-              >
-                تعديل
-              </button>
-              <button
-                onClick={() => handleDelete(brand._id)}
-                className="text-red-600 hover:underline"
-              >
-                حذف
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
