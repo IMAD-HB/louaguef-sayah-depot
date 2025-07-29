@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // ⬅️ added Link
 import axios from "../services/axios";
 import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
@@ -77,6 +77,14 @@ const Login = () => {
         >
           {loading ? "جاري الدخول..." : "تسجيل الدخول"}
         </button>
+
+        {/* 🆕 Go to Home Page button */}
+        <Link
+          to="/"
+          className="block text-center text-orange-500 font-semibold mt-4 hover:underline"
+        >
+          الرجوع إلى الصفحة الرئيسية
+        </Link>
       </form>
     </div>
   );
