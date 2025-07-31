@@ -23,6 +23,7 @@ const Products = () => {
   });
   const [editId, setEditId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [loadingBrands, setLoadingBrands] = useState(false);
@@ -71,11 +72,23 @@ const Products = () => {
   }, [searchTerm]);
 
   const filteredProducts = useMemo(() => {
-    if (!debouncedSearch.trim()) return products;
-    return products.filter((p) =>
-      p.name.toLowerCase().includes(debouncedSearch.toLowerCase())
-    );
-  }, [debouncedSearch, products]);
+    return products.filter((p) => {
+      const matchesSearch = p.name
+        .toLowerCase()
+        .includes(debouncedSearch.toLowerCase());
+      const matchesBrand = selectedBrand ? p.brand._id === selectedBrand : true;
+      return matchesSearch && matchesBrand;
+    });
+  }, [debouncedSearch, selectedBrand, products]);
+
+  const groupedByBrand = useMemo(() => {
+    return filteredProducts.reduce((acc, product) => {
+      const brandName = product.brand?.name || "بدون ماركة";
+      if (!acc[brandName]) acc[brandName] = [];
+      acc[brandName].push(product);
+      return acc;
+    }, {});
+  }, [filteredProducts]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -319,44 +332,69 @@ const Products = () => {
         className="border p-2 rounded w-full mb-6"
       />
 
+      <select
+        value={selectedBrand}
+        onChange={(e) => setSelectedBrand(e.target.value)}
+        className="border p-2 rounded w-full mb-4"
+      >
+        <option value="">كل العلامات التجارية</option>
+        {brands.map((b) => (
+          <option key={b._id} value={b._id}>
+            {b.name}
+          </option>
+        ))}
+      </select>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {loadingProducts ? (
           <div className="col-span-full flex justify-center my-10">
             <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : Array.isArray(filteredProducts) && filteredProducts.length > 0 ? (
-          filteredProducts.map((p) => (
-            <div key={p._id} className="bg-white rounded shadow p-4">
-              <img
-                src={p.image.url}
-                alt={p.name}
-                className="w-full h-48 object-cover rounded mb-2"
-              />
-              <h3 className="text-lg font-semibold">{p.name}</h3>
-              {[1, 2, 3, 4, 5].map((n) =>
-                p.description?.[`line${n}`] ? (
-                  <p key={n} className="text-sm text-gray-600">
-                    {p.description[`line${n}`]}
-                  </p>
-                ) : null
-              )}
-              <p className="text-sm">الماركة: {p.brand?.name}</p>
-              <p className="text-sm">سعر التجزئة: {p.prices.retail}</p>
-              <p className="text-sm">سعر الجملة: {p.prices.wholesale}</p>
-              <p className="text-sm">
-                سعر الجملة الكبرى: {p.prices.superwholesale}
-              </p>
-              <p className="text-sm">المخزون: {p.stock}</p>
-              <div className="flex justify-between mt-2">
-                <button onClick={() => handleEdit(p)} className="text-blue-600">
-                  تعديل
-                </button>
-                <button
-                  onClick={() => handleDelete(p._id)}
-                  className="text-red-600"
-                >
-                  حذف
-                </button>
+          Object.keys(groupedByBrand).map((brand) => (
+            <div key={brand} className="col-span-full">
+              <h3 className="text-xl font-bold text-orange-500 mb-2">
+                {brand}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {groupedByBrand[brand].map((p) => (
+                  <div key={p._id} className="bg-white rounded shadow p-4">
+                    <img
+                      src={p.image.url}
+                      alt={p.name}
+                      className="w-full h-48 object-cover rounded mb-2"
+                    />
+                    <h3 className="text-lg font-semibold">{p.name}</h3>
+                    {[1, 2, 3, 4, 5].map((n) =>
+                      p.description?.[`line${n}`] ? (
+                        <p key={n} className="text-sm text-gray-600">
+                          {p.description[`line${n}`]}
+                        </p>
+                      ) : null
+                    )}
+                    <p className="text-sm">الماركة: {p.brand?.name}</p>
+                    <p className="text-sm">سعر التجزئة: {p.prices.retail}</p>
+                    <p className="text-sm">سعر الجملة: {p.prices.wholesale}</p>
+                    <p className="text-sm">
+                      سعر الجملة الكبرى: {p.prices.superwholesale}
+                    </p>
+                    <p className="text-sm">المخزون: {p.stock}</p>
+                    <div className="flex justify-between mt-2">
+                      <button
+                        onClick={() => handleEdit(p)}
+                        className="text-blue-600"
+                      >
+                        تعديل
+                      </button>
+                      <button
+                        onClick={() => handleDelete(p._id)}
+                        className="text-red-600"
+                      >
+                        حذف
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           ))
