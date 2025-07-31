@@ -45,7 +45,7 @@ const AdminLogin = () => {
       {showWelcome ? (
         <motion.div
           key="welcome"
-          className="min-h-screen flex flex-col items-center justify-center bg-white"
+          className="min-h-screen flex flex-col items-center justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
