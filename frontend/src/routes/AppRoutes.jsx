@@ -15,6 +15,7 @@ import AdminDashboard from "../pages/Admin/Dashboard";
 import Brands from "../pages/Admin/Brands";
 import Products from "../pages/Admin/Products";
 import Orders from "../pages/Admin/Orders";
+import EditOrder from "../pages/Admin/EditOrder";
 import Customers from "../pages/Admin/Customers";
 import Admins from "../pages/Admin/Admins";
 import AdminDebt from "../pages/Admin/Debts";
@@ -47,6 +48,7 @@ const AppRoutes = () => {
           <Route path="brands" element={<Brands />} />
           <Route path="products" element={<Products />} />
           <Route path="orders" element={<Orders />} />
+          <Route path="orders/:id/edit" element={<EditOrder />} />
           <Route path="customers" element={<Customers />} />
           <Route path="admins" element={<Admins />} />
           <Route path="debt" element={<AdminDebt />} />

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "../../services/axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { generateReceiptPDF } from "../../utils/generateReceipt";
 
@@ -81,6 +82,12 @@ const OrderList = () => {
     } catch (err) {
       toast.error("❌ فشل تحميل معلومات الوصل");
     }
+  };
+
+  const navigate = useNavigate();
+
+  const handleUpdate = (orderId) => {
+    navigate(`/admin/orders/${orderId}/edit`);
   };
 
   const handleDelete = async (orderId) => {
@@ -174,6 +181,12 @@ const OrderList = () => {
                         تحميل الوصل
                       </button>
                       <button
+                        onClick={() => handleUpdate(order._id)} 
+                        className="text-green-600 hover:underline"
+                      >
+                        تحديث
+                      </button>
+                      <button
                         onClick={() => handleDelete(order._id)}
                         className="text-red-600 hover:underline"
                       >
@@ -230,6 +243,12 @@ const OrderList = () => {
                       className="text-blue-600 hover:underline"
                     >
                       تحميل الوصل
+                    </button>
+                    <button
+                      onClick={() => handleUpdate(order._id)}
+                      className="text-green-600 hover:underline"
+                    >
+                      تحديث
                     </button>
                     <button
                       onClick={() => handleDelete(order._id)}

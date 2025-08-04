@@ -64,8 +64,7 @@ const AdminLogin = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            مرحبا بك في مجمع لواقف سايح
-          </motion.h1>
+            مرحبا بك          </motion.h1>
         </motion.div>
       ) : (
         <motion.div

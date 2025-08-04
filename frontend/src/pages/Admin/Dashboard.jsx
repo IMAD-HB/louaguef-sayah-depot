@@ -223,7 +223,7 @@ const AdminDashboard = () => {
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : ""
             }`}
-            placeholder="مثلاً: Danone أو جبنة..."
+            placeholder="مثلاً: المرجان..."
             disabled={!selectedCustomer}
           />
         </div>
