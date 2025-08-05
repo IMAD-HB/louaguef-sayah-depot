@@ -43,24 +43,35 @@ const OrderList = () => {
   }, []);
 
   useEffect(() => {
-    let result = orders;
+    let result = [...orders];
 
+    // Filter by search
     if (searchQuery) {
       result = result.filter((order) =>
         order.userId?.name?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
+    // Filter by status
     if (statusFilter) {
       result = result.filter((order) => order.status === statusFilter);
     }
+
+    // Sort by status (pending before confirmed), then by date (oldest to newest)
+    result.sort((a, b) => {
+      const statusOrder = { pending: 0, confirmed: 1 };
+      if (statusOrder[a.status] !== statusOrder[b.status]) {
+        return statusOrder[a.status] - statusOrder[b.status];
+      }
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    });
 
     setFiltered(result);
   }, [searchQuery, statusFilter, orders]);
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      await axios.put(`/orders/${orderId}`, { status: newStatus });
+      await axios.put(`/orders/${orderId}/status`, { status: newStatus });
       toast.success("✅ تم تحديث الحالة");
       throttledFetchOrders();
     } catch {
@@ -180,12 +191,14 @@ const OrderList = () => {
                       >
                         تحميل الوصل
                       </button>
-                      <button
-                        onClick={() => handleUpdate(order._id)} 
-                        className="text-green-600 hover:underline"
-                      >
-                        تحديث
-                      </button>
+                      {order.status !== "confirmed" && (
+                        <button
+                          onClick={() => handleUpdate(order._id)}
+                          className="text-green-600 hover:underline"
+                        >
+                          تحديث
+                        </button>
+                      )}
                       <button
                         onClick={() => handleDelete(order._id)}
                         className="text-red-600 hover:underline"
@@ -244,12 +257,14 @@ const OrderList = () => {
                     >
                       تحميل الوصل
                     </button>
-                    <button
-                      onClick={() => handleUpdate(order._id)}
-                      className="text-green-600 hover:underline"
-                    >
-                      تحديث
-                    </button>
+                    {order.status !== "confirmed" && (
+                      <button
+                        onClick={() => handleUpdate(order._id)}
+                        className="text-green-600 hover:underline"
+                      >
+                        تحديث
+                      </button>
+                    )}
                     <button
                       onClick={() => handleDelete(order._id)}
                       className="text-red-600 hover:underline"

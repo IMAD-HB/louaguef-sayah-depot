@@ -35,12 +35,6 @@ const AdminLayout = () => {
           المنتجات
         </Link>
         <Link
-          to="/admin/orders"
-          className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
-        >
-          الطلبات
-        </Link>
-        <Link
           to="/admin/customers"
           className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
         >
@@ -51,6 +45,12 @@ const AdminLayout = () => {
           className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
         >
           المدراء
+        </Link>
+        <Link
+          to="/admin/orders"
+          className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
+        >
+          الطلبات
         </Link>
         <Link
           to="/admin/debt"
