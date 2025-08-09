@@ -4,62 +4,40 @@ import { logout } from "../utils/auth";
 
 const AdminLayout = () => {
   return (
-    <div className="min-h-screen bg-orange-50">
-      <header className="bg-orange-600 text-white p-4 flex justify-between items-center">
+    <div className="min-h-screen bg-gray-100 text-gray-900">
+      {/* Header */}
+      <header className="bg-cyan-700 text-white p-4 flex justify-between items-center shadow-md">
         <h1 className="font-bold text-xl">لوحة المشرف</h1>
         <button
           onClick={logout}
-          className="bg-white text-orange-600 px-3 py-1 rounded font-bold"
+          className="bg-white text-cyan-700 px-3 py-1 rounded-lg font-bold shadow hover:bg-gray-100 transition"
         >
           تسجيل الخروج
         </button>
       </header>
 
-      <nav className="bg-orange-100 p-3 flex flex-wrap gap-2 justify-center px-4">
-        <Link
-          to="/admin/"
-          className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
-        >
-          الصفحة الرئيسية
-        </Link>
-        <Link
-          to="/admin/brands"
-          className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
-        >
-          العلامات
-        </Link>
-        <Link
-          to="/admin/products"
-          className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
-        >
-          المنتجات
-        </Link>
-        <Link
-          to="/admin/customers"
-          className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
-        >
-          العملاء
-        </Link>
-        <Link
-          to="/admin/admins"
-          className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
-        >
-          المدراء
-        </Link>
-        <Link
-          to="/admin/orders"
-          className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
-        >
-          الطلبات
-        </Link>
-        <Link
-          to="/admin/debt"
-          className="text-orange-600 font-bold px-2 py-1 rounded hover:bg-orange-200 transition"
-        >
-          الديون
-        </Link>
+      {/* Navigation */}
+      <nav className="bg-cyan-50 p-3 flex flex-wrap gap-2 justify-center px-4 shadow-sm">
+        {[
+          { to: "/admin/", label: "الصفحة الرئيسية" },
+          { to: "/admin/brands", label: "العلامات" },
+          { to: "/admin/products", label: "المنتجات" },
+          { to: "/admin/customers", label: "العملاء" },
+          { to: "/admin/admins", label: "المدراء" },
+          { to: "/admin/orders", label: "الطلبات" },
+          { to: "/admin/debt", label: "الديون" },
+        ].map((link) => (
+          <Link
+            key={link.to}
+            to={link.to}
+            className="text-cyan-700 font-semibold px-3 py-1 rounded-md hover:bg-cyan-100 transition"
+          >
+            {link.label}
+          </Link>
+        ))}
       </nav>
 
+      {/* Main Content */}
       <main className="p-4">
         <Outlet />
       </main>

@@ -19,6 +19,7 @@ const ProductDetails = () => {
         try {
           const res = await axios.get(`/products/${id}`);
           setProduct(res.data);
+          setError("");
         } catch (err) {
           setError("فشل في تحميل تفاصيل المنتج، حاول لاحقاً.");
         }
@@ -31,13 +32,13 @@ const ProductDetails = () => {
   }, [id]);
 
   if (error) {
-    return <p className="text-center text-red-500">{error}</p>;
+    return <p className="text-center text-red-500 mt-10">{error}</p>;
   }
 
   if (!product) {
     return (
-      <div className="flex justify-center items-center my-10">
-        <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex justify-center items-center my-16">
+        <div className="w-12 h-12 border-4 border-cyan-700 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -67,80 +68,76 @@ const ProductDetails = () => {
       },
       quantity
     );
-    toast.success("تمت إضافة المنتج إلى السلة");
+    toast.success("✅ تمت إضافة المنتج إلى السلة");
   };
 
   return (
-    <div className="max-w-3xl mx-auto bg-white p-6 rounded shadow">
+    <div className="max-w-3xl mx-auto bg-cyan-50 p-6 rounded-lg shadow-md">
       <img
         src={image}
         alt={product.name}
-        className="w-full h-64 object-contain mb-4"
+        className="w-full h-64 object-contain mb-6 rounded"
       />
-      <h2 className="text-2xl font-bold text-orange-700 mb-2">
-        {product.name}
-      </h2>
-      <p className="text-lg text-gray-800 mb-4">{price} د.ج</p>
+      <h2 className="text-3xl font-bold text-cyan-700 mb-3">{product.name}</h2>
+      <p className="text-xl text-cyan-800 font-semibold mb-6">{price} د.ج</p>
 
       {/* الكمية */}
-      <div className="mb-4 flex items-center gap-3">
-        <span className="text-gray-700 font-semibold">الكمية:</span>
-        <div className="flex items-center border rounded px-2">
+      <div className="mb-6 flex items-center gap-4">
+        <span className="text-cyan-800 font-semibold text-lg">الكمية:</span>
+        <div className="flex items-center border border-cyan-700 rounded-md px-3 py-1 bg-white">
           <button
             onClick={() => handleQuantityChange(-1)}
-            className="px-2 text-lg font-bold text-orange-600"
+            className="px-3 text-2xl font-bold text-cyan-700 hover:text-cyan-900 transition"
           >
             −
           </button>
           <input
             type="number"
-            className="w-12 text-center outline-none"
+            className="w-14 text-center text-cyan-900 font-semibold outline-none"
             value={quantity}
             readOnly
           />
           <button
             onClick={() => handleQuantityChange(1)}
-            className="px-2 text-lg font-bold text-orange-600"
+            className="px-3 text-2xl font-bold text-cyan-700 hover:text-cyan-900 transition"
           >
             +
           </button>
         </div>
-        <span className="text-sm text-gray-500">
-          (المتوفر: {product.stock})
-        </span>
+        <span className="text-sm text-cyan-600">(المتوفر: {product.stock})</span>
       </div>
 
-      <p className="text-md text-gray-700 mb-6">
+      <p className="text-lg text-cyan-800 mb-6">
         الإجمالي: <span className="font-bold">{price * quantity} د.ج</span>
       </p>
 
       {/* زر السلة */}
       <button
         onClick={handleAddToCart}
-        className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded font-bold"
+        className="bg-cyan-700 hover:bg-cyan-800 text-white px-6 py-2 rounded-md font-bold shadow-md transition"
       >
         إضافة إلى السلة
       </button>
 
       {/* الوصف */}
-      <div className="mt-8">
-        <h3 className="text-lg font-semibold text-gray-700 mb-2">الوصف:</h3>
+      <div className="mt-10">
+        <h3 className="text-xl font-semibold text-cyan-700 mb-3">الوصف:</h3>
         {descriptionLines.length > 0 ? (
-          <ul className="list-disc pl-5 text-gray-600 space-y-1">
+          <ul className="list-disc pl-6 text-cyan-800 space-y-1">
             {descriptionLines.map((line, index) => (
               <li key={index}>{line}</li>
             ))}
           </ul>
         ) : (
-          <p className="text-gray-500">لا يوجد وصف متاح.</p>
+          <p className="text-cyan-500">لا يوجد وصف متاح.</p>
         )}
       </div>
 
       {/* عودة */}
-      <div className="mt-6">
+      <div className="mt-8">
         <Link
           to={`/customer/${product.brand?._id}/products`}
-          className="text-orange-600 underline"
+          className="text-cyan-700 underline hover:text-cyan-900 transition"
         >
           ← العودة إلى المنتجات
         </Link>

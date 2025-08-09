@@ -16,7 +16,7 @@ const Checkout = () => {
     0
   );
 
-  // 🚨 Redirect if cart is empty
+  // Redirect if cart is empty
   useEffect(() => {
     if (cartItems.length === 0) {
       navigate("/customer");
@@ -55,10 +55,10 @@ const Checkout = () => {
       });
 
       clearCart();
-      toast.success("✅ تم إنشاء الطلب وتحميل الوصل!");
+      toast.success("تم إنشاء الطلب وتحميل الوصل!");
       navigate("/customer/brands");
     } catch (err) {
-      toast.error("❌ فشل تأكيد الطلب");
+      toast.error("فشل تأكيد الطلب");
     }
   };
 
@@ -71,17 +71,17 @@ const Checkout = () => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto bg-white p-6 rounded shadow">
-      <h2 className="text-2xl font-bold text-orange-700 mb-6 text-center">
+    <div className="max-w-3xl mx-auto bg-cyan-50 p-6 rounded-lg shadow-md">
+      <h2 className="text-3xl font-bold text-cyan-700 mb-8 text-center">
         تأكيد الطلب
       </h2>
 
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+      <section className="mb-8">
+        <h3 className="text-xl font-semibold text-cyan-800 mb-3">
           معلومات العميل:
         </h3>
-        <p className="text-gray-600">الاسم: {customer.name}</p>
-        <p className="text-gray-600">
+        <p className="text-cyan-700">الاسم: {customer.name}</p>
+        <p className="text-cyan-700">
           الفئة:{" "}
           {{
             retail: "تجزئة",
@@ -89,35 +89,38 @@ const Checkout = () => {
             superwholesale: "جملة كبرى",
           }[customer.tier] || "غير معروف"}
         </p>
-      </div>
+      </section>
 
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">المنتجات:</h3>
-        <ul className="space-y-3">
+      <section className="mb-8">
+        <h3 className="text-xl font-semibold text-cyan-800 mb-3">المنتجات:</h3>
+        <ul className="space-y-4">
           {cartItems.map((item) => (
-            <li key={item.id} className="flex justify-between border-b pb-2">
+            <li
+              key={item.id}
+              className="flex justify-between border-b border-cyan-200 pb-3"
+            >
               <div>
-                <p className="text-gray-700 font-medium">{item.name}</p>
-                <p className="text-sm text-gray-500">
+                <p className="text-cyan-900 font-medium">{item.name}</p>
+                <p className="text-sm text-cyan-600">
                   {item.quantity} × {item.price} د.ج
                 </p>
               </div>
-              <p className="font-bold text-orange-700">
+              <p className="font-bold text-cyan-700">
                 {item.quantity * item.price} د.ج
               </p>
             </li>
           ))}
         </ul>
-      </div>
+      </section>
 
-      <div className="text-right text-lg font-bold text-gray-800 mb-6">
-        الإجمالي: <span className="text-orange-700">{total} د.ج</span>
+      <div className="text-right text-xl font-bold text-cyan-900 mb-8">
+        الإجمالي: <span className="text-cyan-700">{total} د.ج</span>
       </div>
 
       <div className="text-center">
         <button
           onClick={handleConfirmOrder}
-          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-bold"
+          className="bg-cyan-700 hover:bg-cyan-800 text-white px-8 py-3 rounded-md font-bold shadow-md transition transform hover:scale-105"
         >
           تأكيد الطلب
         </button>

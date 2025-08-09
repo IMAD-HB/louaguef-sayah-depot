@@ -7,7 +7,7 @@ const CustomerProducts = () => {
   const [products, setProducts] = useState([]);
   const [brandName, setBrandName] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true); // 🆕 loading state
+  const [loading, setLoading] = useState(true);
 
   const customer = JSON.parse(localStorage.getItem("customerInfo"));
 
@@ -15,7 +15,7 @@ const CustomerProducts = () => {
     const timeoutId = setTimeout(() => {
       const fetchData = async () => {
         try {
-          setLoading(true); // 🆕 start loading
+          setLoading(true);
 
           const [productRes, brandRes] = await Promise.all([
             axios.get("/products"),
@@ -28,10 +28,11 @@ const CustomerProducts = () => {
 
           setProducts(filteredProducts);
           setBrandName(brandRes.data.name);
+          setError("");
         } catch (err) {
           setError("فشل تحميل المنتجات أو الماركة، يرجى المحاولة لاحقاً.");
         } finally {
-          setLoading(false); // 🆕 stop loading
+          setLoading(false);
         }
       };
 
@@ -43,25 +44,24 @@ const CustomerProducts = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-orange-600 text-center mb-6">
+      <h2 className="text-3xl font-bold text-cyan-700 text-center mb-8">
         منتجات ماركة: {brandName}
       </h2>
 
       {error && (
-        <p className="text-center text-red-500 font-semibold mb-4">{error}</p>
+        <p className="text-center text-red-500 font-semibold mb-6">{error}</p>
       )}
 
-      {/* 🆕 Loading State */}
       {loading ? (
-        <div className="flex justify-center items-center my-10">
-          <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="flex justify-center items-center my-16">
+          <div className="w-12 h-12 border-4 border-cyan-700 border-t-transparent rounded-full animate-spin"></div>
         </div>
       ) : products.length === 0 && !error ? (
-        <p className="text-center text-gray-600">
+        <p className="text-center text-cyan-700 text-lg">
           لا توجد منتجات حالياً لهذه الماركة.
         </p>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.map((product) => {
             const price =
               product.prices?.[customer?.tier] || product.prices?.retail;
@@ -70,17 +70,17 @@ const CustomerProducts = () => {
               <Link
                 key={product._id}
                 to={`/customer/product/${product._id}`}
-                className="bg-white rounded shadow p-4 hover:shadow-lg transition text-center"
+                className="bg-cyan-50 rounded-lg shadow-md p-5 hover:shadow-xl transition text-center flex flex-col items-center"
               >
                 <img
                   src={product.image?.url}
                   alt={product.name}
-                  className="h-32 object-contain mx-auto mb-2"
+                  className="h-32 object-contain mx-auto mb-4"
                 />
-                <h3 className="text-lg font-semibold text-orange-700">
+                <h3 className="text-lg font-semibold text-cyan-800 mb-1">
                   {product.name}
                 </h3>
-                <p className="text-sm text-gray-600">{price} د.ج</p>
+                <p className="text-cyan-700 font-semibold">{price} د.ج</p>
               </Link>
             );
           })}

@@ -31,10 +31,10 @@ const AdminLogin = () => {
       localStorage.setItem("userType", "admin");
       localStorage.setItem("adminInfo", JSON.stringify(data));
 
-      toast.success("✅ تم تسجيل دخول المشرف");
+      toast.success("تم تسجيل دخول المشرف");
       navigate("/admin");
     } catch (err) {
-      toast.error(err.response?.data?.message || "❌ فشل تسجيل الدخول");
+      toast.error(err.response?.data?.message || "فشل تسجيل الدخول");
     } finally {
       setLoading(false);
     }
@@ -45,31 +45,56 @@ const AdminLogin = () => {
       {showWelcome ? (
         <motion.div
           key="welcome"
-          className="min-h-screen flex flex-col items-center justify-center"
+          className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-cyan-50 to-blue-50 p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <motion.img
-            src="/logo.png"
-            alt="Logo"
-            className="w-32 h-32 mb-4"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 120 }}
-          />
+          <motion.div
+            initial={{ scale: 0, rotate: -15 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{
+              type: "spring",
+              stiffness: 150,
+              damping: 10,
+            }}
+            whileHover={{ scale: 1.05 }}
+          >
+            <motion.img
+              src="/logo.png"
+              alt="Logo"
+              className="w-40 mb-6 drop-shadow-lg"
+              whileTap={{ scale: 0.95 }}
+            />
+          </motion.div>
+
           <motion.h1
-            className="text-2xl font-bold text-orange-600 text-center"
+            className="text-3xl md:text-4xl font-bold bg-cyan-700 bg-clip-text text-transparent text-center mb-2"
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
+            transition={{
+              delay: 0.3,
+              type: "spring",
+              stiffness: 100,
+            }}
           >
-            مرحبا بك          </motion.h1>
+            مرحبا بك
+          </motion.h1>
+
+          <motion.p
+            className="text-cyan-700 text-center max-w-md"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            نرحب بك في موقعنا
+          </motion.p>
         </motion.div>
       ) : (
         <motion.div
           key="login"
-          className="min-h-screen flex items-center justify-center bg-orange-50"
+          className="min-h-screen flex items-center justify-center bg-cyan-50"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -79,7 +104,7 @@ const AdminLogin = () => {
             onSubmit={handleSubmit}
             className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-sm"
           >
-            <h2 className="text-2xl mb-6 text-center text-orange-600 font-bold">
+            <h2 className="text-2xl mb-6 text-center text-cyan-700 font-bold">
               تسجيل دخول المشرف
             </h2>
 
@@ -88,7 +113,7 @@ const AdminLogin = () => {
               placeholder="اسم المستخدم"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mb-4 px-4 py-2 border rounded w-full focus:outline-orange-400"
+              className="mb-4 px-4 py-2 border rounded w-full focus:outline-cyan-500"
               required
             />
 
@@ -98,13 +123,13 @@ const AdminLogin = () => {
                 placeholder="كلمة المرور"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="px-4 py-2 border rounded w-full focus:outline-orange-400 pr-10"
+                className="px-4 py-2 border rounded w-full focus:outline-cyan-500 pr-10"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-2 flex items-center text-gray-600 hover:text-orange-500"
+                className="absolute inset-y-0 right-2 flex items-center text-gray-600 hover:text-cyan-600"
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -113,7 +138,7 @@ const AdminLogin = () => {
             <button
               type="submit"
               disabled={loading}
-              className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded w-full"
+              className="bg-cyan-700 hover:bg-cyan-800 text-white font-bold py-2 px-4 rounded w-full transition"
             >
               {loading ? "جاري الدخول..." : "تسجيل الدخول"}
             </button>

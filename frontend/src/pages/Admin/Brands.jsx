@@ -12,11 +12,7 @@ const Brands = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      fetchBrands();
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
+    fetchBrands();
   }, []);
 
   const fetchBrands = async () => {
@@ -25,7 +21,7 @@ const Brands = () => {
       const { data } = await axios.get("/brands");
       setBrands(data);
     } catch {
-      toast.error("❌ فشل تحميل العلامات التجارية");
+      toast.error("فشل تحميل العلامات التجارية");
     } finally {
       setLoading(false);
     }
@@ -39,9 +35,8 @@ const Brands = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!name || (!logo && !editId)) {
-      toast.error("❌ الاسم والشعار مطلوبان");
+      toast.error("الاسم والشعار مطلوبان");
       return;
     }
 
@@ -52,27 +47,26 @@ const Brands = () => {
     try {
       if (editId) {
         await axios.put(`/brands/${editId}`, formData);
-        toast.success("✅ تم تعديل العلامة");
+        toast.success("تم تعديل العلامة");
       } else {
         await axios.post("/brands", formData);
-        toast.success("✅ تم إضافة العلامة");
+        toast.success("تم إضافة العلامة");
       }
-
       resetForm();
       fetchBrands();
     } catch (err) {
-      toast.error(err.response?.data?.message || "❌ حدث خطأ");
+      toast.error(err.response?.data?.message || "حدث خطأ");
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("❗ هل أنت متأكد من حذف هذه العلامة؟")) return;
+    if (!window.confirm("هل أنت متأكد من حذف هذه العلامة؟")) return;
     try {
       await axios.delete(`/brands/${id}`);
-      toast.success("✅ تم حذف العلامة");
+      toast.success("تم حذف العلامة");
       fetchBrands();
     } catch {
-      toast.error("❌ فشل الحذف");
+      toast.error("فشل الحذف");
     }
   };
 
@@ -95,17 +89,19 @@ const Brands = () => {
   );
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold text-orange-600 mb-4">
+    <div className="p-6 max-w-5xl mx-auto space-y-6">
+      {/* Page Title */}
+      <h2 className="text-3xl font-bold text-cyan-700 mb-6 pb-2">
         العلامات التجارية
       </h2>
 
+      {/* Add/Edit Form */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-4 rounded shadow space-y-4 mb-6"
+        className="space-y-6 bg-white p-6 rounded-xl shadow"
         encType="multipart/form-data"
       >
-        <h3 className="text-lg font-semibold">
+        <h3 className="text-lg font-semibold text-cyan-700 mb-2 pb-1">
           {editId ? "تعديل العلامة" : "إضافة علامة جديدة"}
         </h3>
 
@@ -114,7 +110,7 @@ const Brands = () => {
           placeholder="اسم العلامة"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none"
           required
         />
 
@@ -122,22 +118,24 @@ const Brands = () => {
           type="file"
           accept="image/*"
           onChange={handleLogoChange}
-          className="w-full border p-2 rounded"
+          className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none"
           {...(editId ? {} : { required: true })}
         />
 
         {preview && (
-          <img
-            src={preview}
-            alt="preview"
-            className="h-20 object-contain mb-2 rounded"
-          />
+          <div className="flex justify-center">
+            <img
+              src={preview}
+              alt="preview"
+              className="h-20 object-contain rounded-lg border border-gray-300"
+            />
+          </div>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <button
             type="submit"
-            className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+            className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg font-semibold shadow transition"
           >
             {editId ? "تحديث" : "إضافة"}
           </button>
@@ -145,7 +143,7 @@ const Brands = () => {
             <button
               type="button"
               onClick={resetForm}
-              className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+              className="bg-gray-200 hover:bg-gray-300 px-6 py-2 rounded-lg font-semibold shadow transition"
             >
               إلغاء
             </button>
@@ -153,45 +151,47 @@ const Brands = () => {
         </div>
       </form>
 
+      {/* Search Input */}
       <input
         type="text"
         placeholder="بحث..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="mb-4 w-full border p-2 rounded"
+        className="w-full mb-4 border rounded-lg p-2 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none"
       />
 
+      {/* Brand Cards */}
       {loading ? (
         <div className="flex justify-center my-10">
-          <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-10 h-10 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-4">
           {filtered.map((brand) => (
             <div
               key={brand._id}
-              className="bg-white shadow rounded p-4 flex justify-between items-center"
+              className="bg-white shadow rounded-xl p-4 flex justify-between items-center border border-cyan-100 hover:shadow-lg transition"
             >
               <div className="flex items-center gap-4">
                 {brand.logo?.url && (
                   <img
                     src={brand.logo.url}
                     alt={brand.name}
-                    className="h-12 w-12 object-contain"
+                    className="h-12 w-12 object-contain rounded"
                   />
                 )}
-                <span className="font-medium">{brand.name}</span>
+                <span className="text-gray-700 font-medium">{brand.name}</span>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-4">
                 <button
                   onClick={() => startEdit(brand)}
-                  className="text-blue-600 hover:underline"
+                  className="text-cyan-700 hover:text-cyan-900 font-semibold"
                 >
                   تعديل
                 </button>
                 <button
                   onClick={() => handleDelete(brand._id)}
-                  className="text-red-600 hover:underline"
+                  className="text-red-600 hover:underline font-semibold"
                 >
                   حذف
                 </button>

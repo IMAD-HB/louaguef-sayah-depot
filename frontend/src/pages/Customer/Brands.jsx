@@ -4,19 +4,19 @@ import axios from "../../services/axios";
 
 const CustomerBrands = () => {
   const [brands, setBrands] = useState([]);
-  const [loading, setLoading] = useState(true); // 🆕 loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       const fetchBrands = async () => {
         try {
-          setLoading(true); // 🆕 start loading
+          setLoading(true);
           const { data } = await axios.get("/brands");
           setBrands(data);
         } catch (err) {
           console.error("فشل تحميل الماركات", err);
         } finally {
-          setLoading(false); // 🆕 stop loading
+          setLoading(false);
         }
       };
 
@@ -28,28 +28,28 @@ const CustomerBrands = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-orange-600 text-center mb-6">
+      <h2 className="text-3xl font-bold text-cyan-700 text-center mb-8">
         اختر ماركة لعرض المنتجات
       </h2>
 
       {loading ? (
-        <div className="flex justify-center items-center my-10">
-          <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="flex justify-center items-center my-16">
+          <div className="w-12 h-12 border-4 border-cyan-700 border-t-transparent rounded-full animate-spin"></div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {brands.map((brand) => (
             <Link
               to={`/customer/${brand._id}/products`}
               key={brand._id}
-              className="bg-white rounded shadow p-4 hover:shadow-lg transition text-center"
+              className="bg-cyan-50 rounded-lg shadow-md p-5 hover:shadow-xl transition text-center flex flex-col items-center"
             >
               <img
                 src={brand.logo?.url}
                 alt={brand.name}
-                className="h-24 mx-auto mb-3 object-contain"
+                className="h-24 mb-4 object-contain"
               />
-              <h3 className="text-lg font-semibold text-orange-700">
+              <h3 className="text-lg font-semibold text-cyan-800">
                 {brand.name}
               </h3>
             </Link>

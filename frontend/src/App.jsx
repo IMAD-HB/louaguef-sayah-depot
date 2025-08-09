@@ -9,9 +9,14 @@ const App = () => {
   return (
     <BrowserRouter>
       <CartProvider>
-        <main className="min-h-screen bg-orange-50 p-4 font-[Tajawal]">
+        <main className="min-h-screen bg-gray-900 font-[Tajawal] text-white">
           <AppRoutes />
-          <ToastContainer position="top-center" autoClose={1500} rtl theme="colored" />
+          <ToastContainer
+            position="top-center"
+            autoClose={1500}
+            rtl
+            theme="colored"
+          />
         </main>
       </CartProvider>
     </BrowserRouter>

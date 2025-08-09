@@ -14,7 +14,6 @@ const EditOrder = () => {
   const [paidAmount, setPaidAmount] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch order data and selected products only
   useEffect(() => {
     const fetchOrder = async () => {
       try {
@@ -38,7 +37,7 @@ const EditOrder = () => {
         }));
         setSelectedProducts(mapped);
       } catch (err) {
-        toast.error("❌ فشل تحميل بيانات الطلب");
+        toast.error("فشل تحميل بيانات الطلب");
         navigate("/admin/orders");
       }
     };
@@ -46,7 +45,6 @@ const EditOrder = () => {
     fetchOrder();
   }, [id, navigate]);
 
-  // Fetch products when typing
   useEffect(() => {
     const fetchProducts = async () => {
       if (!searchTerm.trim()) return;
@@ -64,7 +62,7 @@ const EditOrder = () => {
 
         setProducts(combined);
       } catch {
-        toast.error("❌ فشل البحث عن المنتجات");
+        toast.error("فشل البحث عن المنتجات");
       }
     };
 
@@ -138,10 +136,10 @@ const EditOrder = () => {
         paidAmount: paidAmount ? Number(paidAmount) : 0,
       });
 
-      toast.success("✅ تم تحديث الطلب بنجاح");
+      toast.success("تم تحديث الطلب بنجاح");
       navigate("/admin/orders");
     } catch (err) {
-      toast.error("❌ فشل تحديث الطلب");
+      toast.error("فشل تحديث الطلب");
     }
   };
 
@@ -167,27 +165,31 @@ const EditOrder = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold text-orange-600 mb-6">تعديل الطلب</h1>
+      <h1 className="text-3xl font-bold text-cyan-700 mb-6">تعديل الطلب</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block mb-2">💰 المبلغ المدفوع:</label>
+          <label className="block mb-2 text-cyan-800 font-semibold">
+            💰 المبلغ المدفوع:
+          </label>
           <input
             type="number"
             value={paidAmount}
             onChange={(e) => setPaidAmount(e.target.value)}
-            className="w-full border rounded p-2"
+            className="w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
             placeholder="مثلاً: 2000"
           />
         </div>
 
         <div>
-          <label className="block mb-2">🔍 ابحث عن منتج أو علامة تجارية:</label>
+          <label className="block mb-2 text-cyan-800 font-semibold">
+            🔍 ابحث عن منتج أو علامة تجارية:
+          </label>
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full border rounded p-2"
+            className="w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
             placeholder="مثلاً: المرجان..."
           />
         </div>
@@ -196,7 +198,7 @@ const EditOrder = () => {
           <div className="space-y-4">
             {Object.entries(groupedByBrand).map(([brand, brandProducts]) => (
               <div key={brand}>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2 border-b pb-1">
+                <h3 className="text-lg font-semibold text-cyan-700 mb-2 border-b pb-1">
                   🏷️ {brand}
                 </h3>
                 {brandProducts.map((product) => {
@@ -210,7 +212,7 @@ const EditOrder = () => {
                       key={product._id}
                       className="flex items-center justify-between mb-2"
                     >
-                      <span className="flex-1">
+                      <span className="flex-1 text-gray-800">
                         {product.name} - {getUnitPrice(product)} دج (المخزون:{" "}
                         {product.stock})
                       </span>
@@ -220,7 +222,7 @@ const EditOrder = () => {
                           onClick={() =>
                             handleProductChange(product._id, quantity - 1)
                           }
-                          className="px-2 text-lg font-bold text-orange-600"
+                          className="px-2 text-lg font-bold text-cyan-700"
                           disabled={quantity <= 0}
                         >
                           −
@@ -236,7 +238,7 @@ const EditOrder = () => {
                           onClick={() =>
                             handleProductChange(product._id, quantity + 1)
                           }
-                          className="px-2 text-lg font-bold text-orange-600"
+                          className="px-2 text-lg font-bold text-cyan-700"
                           disabled={quantity >= product.stock}
                         >
                           +
@@ -244,7 +246,7 @@ const EditOrder = () => {
                       </div>
                       <input
                         type="number"
-                        className={`w-24 border rounded p-2 ml-4 ${
+                        className={`w-24 border rounded p-2 ml-4 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
                           currentCustomPrice === 0 ? "border-red-500" : ""
                         }`}
                         placeholder={`سعر مخصص (اختياري)`}
@@ -266,8 +268,8 @@ const EditOrder = () => {
         )}
 
         {selectedProducts.length > 0 && (
-          <div className="mt-8 border-t pt-4 space-y-3">
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+          <div className="mt-8 border-t border-cyan-200 pt-4 space-y-3">
+            <h3 className="text-xl font-semibold text-cyan-800 mb-2">
               🛒 المنتجات المحددة:
             </h3>
             {selectedProducts.map((item) => {
@@ -277,7 +279,7 @@ const EditOrder = () => {
               return (
                 <div
                   key={item.productId}
-                  className="bg-yellow-100 p-3 rounded shadow-sm text-sm flex justify-between items-center"
+                  className="bg-cyan-50 p-3 rounded shadow-sm text-sm flex justify-between items-center"
                 >
                   <span>
                     {product.name} - الكمية: {item.quantity} - السعر:{" "}
@@ -293,7 +295,7 @@ const EditOrder = () => {
               );
             })}
 
-            <div className="text-right text-lg font-bold text-gray-700">
+            <div className="text-right text-lg font-bold text-cyan-700">
               💵 المجموع الكلي: {totalPrice} دج
             </div>
           </div>
@@ -301,7 +303,7 @@ const EditOrder = () => {
 
         <button
           type="submit"
-          className="bg-orange-600 text-white px-6 py-2 rounded"
+          className="bg-cyan-700 text-white px-6 py-2 rounded shadow hover:bg-cyan-800 transition"
         >
           تحديث الطلب
         </button>

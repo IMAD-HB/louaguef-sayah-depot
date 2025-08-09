@@ -12,15 +12,17 @@ const CustomerDashboard = () => {
   };
 
   return (
-    <div className="text-center p-6">
-      <h1 className="text-3xl font-bold text-orange-600 mb-4">
+    <div className="max-w-xl mx-auto bg-cyan-50 p-8 rounded-lg shadow-md text-center">
+      <h1 className="text-4xl font-bold text-cyan-700 mb-5">
         مرحباً، {customer?.name || "عميل"} 👋
       </h1>
-      <p className="text-gray-600 mb-6">نحن سعداء بعودتك، يمكنك بدء التسوق الآن.</p>
+      <p className="text-cyan-800 mb-8 text-lg">
+        نحن سعداء بعودتك، يمكنك بدء التسوق الآن.
+      </p>
 
       <button
         onClick={handleStartShopping}
-        className="bg-orange-600 text-white px-6 py-2 rounded shadow hover:bg-orange-700 transition"
+        className="bg-cyan-700 text-white px-8 py-3 rounded-md font-semibold shadow-md hover:bg-cyan-800 transition transform hover:scale-105"
       >
         ابدأ الطلب الآن
       </button>

@@ -3,12 +3,18 @@ import { Routes, Route } from "react-router-dom";
 // Layouts
 import AdminLayout from "../layouts/AdminLayout";
 import CustomerLayout from "../layouts/CustomerLayout";
+import PublicLayout from "../layouts/PublicLayout";
+import MinimalLayout from "../layouts/MinimalLayout";
 
 // صفحات عامة
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import NotFound from "../pages/NotFound";
 import AdminLogin from "../pages/Admin/Login";
+
+// الصفحات العامة الجديدة
+import ProductList from "../pages/ProductList";
+import RequestAccess from "../pages/RequestAccess";
 
 // صفحات المشرف
 import AdminDashboard from "../pages/Admin/Dashboard";
@@ -36,12 +42,20 @@ import ProtectedRoute from "./ProtectedRoute";
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* صفحات عامة */}
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route element={<PublicLayout />}>
+        {/* صفحات عامة */}
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+
+        {/* صفحات عامة إضافية */}
+        <Route path="/products" element={<ProductList />} />
+        <Route path="/request-access" element={<RequestAccess />} />
+      </Route>
 
       {/* صفحات المشرف مع الحماية */}
+      <Route element={<MinimalLayout />}>
+        <Route path="/admin/login" element={<AdminLogin />} />
+      </Route>
       <Route element={<ProtectedRoute allowedRole="admin" />}>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />

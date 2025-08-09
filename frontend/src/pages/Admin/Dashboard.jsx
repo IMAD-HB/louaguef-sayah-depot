@@ -66,7 +66,7 @@ const AdminDashboard = () => {
         customPrice:
           customPrice !== undefined
             ? Number(customPrice)
-            : existing?.customPrice, // persist existing custom price
+            : existing?.customPrice,
       };
 
       if (existing) {
@@ -101,9 +101,8 @@ const AdminDashboard = () => {
         paidAmount: paidAmount ? Number(paidAmount) : undefined,
       });
 
-      toast.success("✅ تم إنشاء الطلب بنجاح");
+      toast.success("تم إنشاء الطلب بنجاح");
 
-      // 🧠 Update product stock locally
       setProducts((prevProducts) =>
         prevProducts.map((product) => {
           const purchased = selectedProducts.find(
@@ -119,13 +118,12 @@ const AdminDashboard = () => {
         })
       );
 
-      // 🧼 Reset form
       setSelectedCustomer("");
       setSelectedProducts([]);
       setSearchTerm("");
       setPaidAmount("");
     } catch (err) {
-      toast.error("❌ فشل إنشاء الطلب");
+      toast.error("فشل إنشاء الطلب");
     }
   };
 
@@ -150,18 +148,23 @@ const AdminDashboard = () => {
   );
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold text-orange-600 mb-6">
+    <div className="p-6 max-w-5xl mx-auto">
+      <h1 className="text-3xl font-bold text-cyan-700 mb-6">
         إنشاء طلب جديد
       </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6 bg-white p-6 rounded-xl shadow"
+      >
         {/* Customer Search */}
-        <div className="mb-4">
-          <label className="block mb-2">🔍 ابحث عن العميل:</label>
+        <div>
+          <label className="block mb-2 font-semibold text-gray-700">
+            🔍 ابحث عن العميل:
+          </label>
           <input
             type="text"
-            className="w-full border rounded p-2"
+            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none"
             placeholder="مثلاً: أحمد أو شركة..."
             value={customerSearch}
             onChange={(e) => setCustomerSearch(e.target.value)}
@@ -170,7 +173,9 @@ const AdminDashboard = () => {
 
         {/* Customer Select */}
         <div>
-          <label className="block mb-2">العميل:</label>
+          <label className="block mb-2 font-semibold text-gray-700">
+            العميل:
+          </label>
           <select
             value={selectedCustomer}
             onChange={(e) => {
@@ -178,7 +183,7 @@ const AdminDashboard = () => {
               setSelectedProducts([]);
               setSearchTerm("");
             }}
-            className="w-full border rounded p-2"
+            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none"
           >
             <option value="">اختر عميلاً</option>
             {customers
@@ -199,26 +204,30 @@ const AdminDashboard = () => {
           </select>
         </div>
 
-        {/* Versé Input */}
+        {/* Paid Amount */}
         <div>
-          <label className="block mb-2">💰 المبلغ المدفوع (اختياري):</label>
+          <label className="block mb-2 font-semibold text-gray-700">
+            💰 المبلغ المدفوع (اختياري):
+          </label>
           <input
             type="number"
             value={paidAmount}
             onChange={(e) => setPaidAmount(e.target.value)}
-            className="w-full border rounded p-2"
+            className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none"
             placeholder="مثلاً: 1500"
           />
         </div>
 
         {/* Product Search */}
         <div>
-          <label className="block mb-2">🔍 ابحث عن منتج أو علامة تجارية:</label>
+          <label className="block mb-2 font-semibold text-gray-700">
+            🔍 ابحث عن منتج أو علامة تجارية:
+          </label>
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className={`w-full border rounded p-2 ${
+            className={`w-full border rounded-lg p-2 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none ${
               !selectedCustomer
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : ""
@@ -229,12 +238,14 @@ const AdminDashboard = () => {
         </div>
 
         {/* Product Selection */}
-        {/* Inside Product Selection Section */}
         {searchTerm.trim() && Object.keys(groupedByBrand).length > 0 && (
           <div className="space-y-4">
             {Object.entries(groupedByBrand).map(([brand, brandProducts]) => (
-              <div key={brand}>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2 border-b pb-1">
+              <div
+                key={brand}
+                className="border border-gray-200 rounded-lg p-4 bg-gray-50"
+              >
+                <h3 className="text-lg font-semibold text-cyan-700 mb-3 border-b pb-1">
                   🏷️ {brand}
                 </h3>
                 {brandProducts.map((product) => {
@@ -244,19 +255,17 @@ const AdminDashboard = () => {
                       key={product._id}
                       className="flex items-center justify-between mb-2"
                     >
-                      <span className="flex-1">
+                      <span className="flex-1 text-gray-700">
                         {product.name} - {getUnitPrice(product)} دج (المخزون:{" "}
                         {product.stock})
                       </span>
-
-                      {/* Quantity Selector UI */}
-                      <div className="flex items-center border rounded px-2 ml-4">
+                      <div className="flex items-center border rounded-lg px-2 ml-4 bg-white">
                         <button
                           type="button"
                           onClick={() =>
                             handleProductChange(product._id, quantity - 1)
                           }
-                          className="px-2 text-lg font-bold text-orange-600"
+                          className="px-2 text-lg font-bold text-cyan-700 hover:text-cyan-900"
                           disabled={quantity <= 0}
                         >
                           −
@@ -272,7 +281,7 @@ const AdminDashboard = () => {
                           onClick={() =>
                             handleProductChange(product._id, quantity + 1)
                           }
-                          className="px-2 text-lg font-bold text-orange-600"
+                          className="px-2 text-lg font-bold text-cyan-700 hover:text-cyan-900"
                           disabled={quantity >= product.stock}
                         >
                           +
@@ -290,7 +299,7 @@ const AdminDashboard = () => {
         {selectedProducts.length > 0 && (
           <>
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-700 mb-2 border-b pb-1">
+              <h3 className="text-lg font-semibold text-cyan-700 mb-2 border-b pb-1">
                 🛒 المنتجات المحددة:
               </h3>
               {selectedProducts.map((item) => {
@@ -299,24 +308,23 @@ const AdminDashboard = () => {
                 return (
                   <div
                     key={product._id}
-                    className="bg-yellow-50 p-3 rounded mb-2 space-y-2"
+                    className="bg-cyan-50 p-3 rounded-lg mb-2 space-y-2 border border-cyan-100"
                   >
                     <div className="flex justify-between items-center">
-                      <span>
+                      <span className="text-gray-700">
                         {product.name} - السعر:{" "}
                         {item.customPrice !== undefined
                           ? `${item.customPrice} دج (مخصص)`
                           : `${item.unitPrice} دج`}{" "}
                         (المخزون: {product.stock})
                       </span>
-
-                      <div className="flex items-center border rounded px-2 ml-4">
+                      <div className="flex items-center border rounded-lg px-2 ml-4 bg-white">
                         <button
                           type="button"
                           onClick={() =>
                             handleProductChange(product._id, item.quantity - 1)
                           }
-                          className="px-2 text-lg font-bold text-orange-600"
+                          className="px-2 text-lg font-bold text-cyan-700 hover:text-cyan-900"
                           disabled={item.quantity <= 0}
                         >
                           −
@@ -332,18 +340,16 @@ const AdminDashboard = () => {
                           onClick={() =>
                             handleProductChange(product._id, item.quantity + 1)
                           }
-                          className="px-2 text-lg font-bold text-orange-600"
+                          className="px-2 text-lg font-bold text-cyan-700 hover:text-cyan-900"
                           disabled={item.quantity >= product.stock}
                         >
                           +
                         </button>
                       </div>
                     </div>
-
-                    {/* Custom Price Input */}
                     <input
                       type="number"
-                      className="w-full border rounded p-2 mt-1"
+                      className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none"
                       placeholder={`سعر مخصص (اختياري)`}
                       value={item.customPrice ?? ""}
                       onChange={(e) =>
@@ -369,7 +375,7 @@ const AdminDashboard = () => {
         {/* Submit Button */}
         <button
           type="submit"
-          className="bg-orange-600 text-white px-6 py-2 rounded"
+          className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg font-semibold shadow transition"
         >
           إنشاء الطلب
         </button>

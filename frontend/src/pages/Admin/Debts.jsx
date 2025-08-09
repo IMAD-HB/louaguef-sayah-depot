@@ -13,65 +13,63 @@ const AdminDebtPage = () => {
   const fetchTimeout = useRef(null);
   const [loading, setLoading] = useState(true);
 
-  const throttledFetchCustomers = () => {
+  const fetchCustomers = async () => {
     if (fetchTimeout.current) return;
 
     fetchTimeout.current = setTimeout(async () => {
       fetchTimeout.current = null;
-      setLoading(true); // start loading
+      setLoading(true);
       try {
         const { data } = await axios.get("/customers");
         const filtered = data.filter((cust) => cust.totalDebt > 0);
         setCustomers(filtered);
       } catch {
-        toast.error("❌ فشل تحميل العملاء");
+        toast.error("فشل تحميل العملاء");
       } finally {
-        setLoading(false); // end loading
+        setLoading(false);
       }
     }, 300);
   };
 
   useEffect(() => {
-    throttledFetchCustomers();
+    fetchCustomers();
   }, []);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
-    }, 300);
-    return () => clearTimeout(timeout);
+    const handler = setTimeout(() => setDebouncedSearch(searchTerm), 300);
+    return () => clearTimeout(handler);
   }, [searchTerm]);
 
   const filteredCustomers = customers.filter((cust) => {
-    const search = debouncedSearch.toLowerCase();
+    const q = debouncedSearch.toLowerCase();
     return (
-      cust.name.toLowerCase().includes(search) ||
-      cust.username.toLowerCase().includes(search)
+      cust.name.toLowerCase().includes(q) ||
+      cust.username.toLowerCase().includes(q)
     );
   });
 
-  const handleSettle = async (cust) => {
-    const amount = parseFloat(amounts[cust._id]);
+  const handleSettle = async (customer) => {
+    const amount = parseFloat(amounts[customer._id]);
     if (!amount || amount <= 0) {
-      return toast.error("❌ أدخل مبلغًا صالحًا");
+      return toast.error("أدخل مبلغًا صالحًا");
     }
-    if (amount > cust.totalDebt) {
-      return toast.error("❌ المبلغ أكبر من الدين الحالي");
+    if (amount > customer.totalDebt) {
+      return toast.error("المبلغ أكبر من الدين الحالي");
     }
 
     try {
-      await axios.put(`/customers/${cust._id}/settledebt`, { amount });
+      await axios.put(`/customers/${customer._id}/settledebt`, { amount });
       await axios.post("/settlements", {
-        customerId: cust._id,
-        name: cust.name,
-        username: cust.username,
+        customerId: customer._id,
+        name: customer.name,
+        username: customer.username,
         amount,
       });
-      toast.success("✅ تم تسوية جزء من الدين");
-      setAmounts({ ...amounts, [cust._id]: "" });
-      throttledFetchCustomers();
+      toast.success("تم تسوية جزء من الدين");
+      setAmounts((prev) => ({ ...prev, [customer._id]: "" }));
+      fetchCustomers();
     } catch {
-      toast.error("❌ فشل التسوية");
+      toast.error("فشل التسوية");
     }
   };
 
@@ -79,23 +77,18 @@ const AdminDebtPage = () => {
     try {
       const { data } = await axios.get("/settlements/today");
 
-      if (!data.length) {
-        toast.info("ℹ️ لا توجد تسويات لليوم");
+      if (data.length === 0) {
+        toast.info("لا توجد تسويات لليوم");
         return;
       }
 
       const doc = new jsPDF();
       doc.setFont("Amiri-Regular", "normal");
       doc.setFontSize(16);
+      doc.text("تسويات اليوم", 105, 15, { align: "center" });
 
-      // Header
-      doc.text("تسويات اليوم", 105, 15, {
-        align: "center",
-      });
-
-      // Prepare table
-      const tableData = data.map((s, index) => [
-        index + 1,
+      const tableData = data.map((s, i) => [
+        i + 1,
         s.name,
         s.username,
         s.amount.toFixed(2) + " د.ج",
@@ -112,14 +105,13 @@ const AdminDebtPage = () => {
           halign: "right",
         },
         headStyles: {
-          fillColor: [255, 102, 0],
+          fillColor: [0, 184, 184],
           font: "Amiri-Regular",
           fontStyle: "normal",
         },
         margin: { horizontal: 10 },
       });
 
-      // Total footer
       const total = data.reduce((sum, s) => sum + s.amount, 0);
       doc.text(
         `المجموع: ${total.toFixed(2)} د.ج`,
@@ -128,32 +120,29 @@ const AdminDebtPage = () => {
         { align: "center" }
       );
 
-      // Save with today's date
       const today = new Date().toISOString().split("T")[0];
       doc.save(`settlements_${today}.pdf`);
-    } catch (err) {
-      toast.error("❌ فشل تحميل التسويات");
+    } catch {
+      toast.error("فشل تحميل التسويات");
     }
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold text-orange-600 mb-4">ديون العملاء</h2>
+    <div className="p-6">
+      <h1 className="text-3xl font-bold text-cyan-700 mb-6">ديون العملاء</h1>
 
-      {/* 🔍 Search Input */}
       <input
         type="text"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="ابحث بالاسم أو اسم المستخدم..."
-        className="border p-2 rounded w-full mb-4"
+        className="w-full p-2 mb-6 border rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
       />
 
-      {/* 📥 Download Button */}
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end mb-6">
         <button
           onClick={handleDownloadTodaySettlements}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-cyan-700 hover:bg-cyan-800 text-white px-6 py-2 rounded shadow transition"
         >
           تحميل تسويات اليوم
         </button>
@@ -161,129 +150,126 @@ const AdminDebtPage = () => {
 
       {loading ? (
         <div className="flex justify-center items-center py-10">
-          <div className="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-10 h-10 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       ) : (
         <>
-          <div className="bg-white rounded shadow p-4">
-            {/* Table view */}
-            <table className="w-full text-right hidden sm:table">
-              <thead>
-                <tr className="border-b font-semibold text-gray-700">
-                  <th className="py-2">الاسم</th>
-                  <th>اسم المستخدم</th>
-                  <th>الفئة</th>
-                  <th>الدين الحالي</th>
-                  <th>المبلغ المراد تسويته</th>
-                  <th>تسوية</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredCustomers.length === 0 ? (
-                  <tr>
-                    <td colSpan="6" className="text-center py-4 text-gray-500">
-                      لا يوجد عملاء لديهم ديون.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredCustomers.map((cust) => (
-                    <tr key={cust._id} className="border-b">
-                      <td className="py-2">{cust.name}</td>
-                      <td>{cust.username}</td>
-                      <td>
-                        {{
-                          retail: "تجزئة",
-                          wholesale: "جملة",
-                          superwholesale: "جملة كبرى",
-                        }[cust.tier] || "غير معروف"}
-                      </td>
-                      <td>{cust.totalDebt.toFixed(2)} د.ج</td>
-                      <td>
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          value={amounts[cust._id] || ""}
-                          onChange={(e) =>
-                            setAmounts({
-                              ...amounts,
-                              [cust._id]: e.target.value,
-                            })
-                          }
-                          className="border p-1 rounded w-24 text-left"
-                        />
-                      </td>
-                      <td>
-                        <button
-                          onClick={() => handleSettle(cust)}
-                          className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-                        >
-                          تسوية
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-
-            {/* Card view */}
-            <div className="space-y-4 sm:hidden">
+          {/* Desktop Table */}
+          <table className="w-full text-right hidden sm:table border-collapse">
+            <thead>
+              <tr className="bg-cyan-50 border-b font-semibold text-cyan-700">
+                <th className="py-3 px-4">الاسم</th>
+                <th className="px-4">اسم المستخدم</th>
+                <th className="px-4">الفئة</th>
+                <th className="px-4">الدين الحالي</th>
+                <th className="px-4">المبلغ المراد تسويته</th>
+                <th className="px-4">تسوية</th>
+              </tr>
+            </thead>
+            <tbody>
               {filteredCustomers.length === 0 ? (
-                <p className="text-center text-gray-500">
-                  لا يوجد عملاء لديهم ديون.
-                </p>
+                <tr>
+                  <td colSpan={6} className="text-center py-6 text-gray-500">
+                    لا يوجد عملاء لديهم ديون.
+                  </td>
+                </tr>
               ) : (
                 filteredCustomers.map((cust) => (
-                  <div
+                  <tr
                     key={cust._id}
-                    className="border rounded p-4 shadow-sm space-y-2 text-sm"
+                    className="border-b hover:bg-cyan-50 transition"
                   >
-                    <div>
-                      <span className="font-semibold">الاسم: </span>
-                      {cust.name}
-                    </div>
-                    <div>
-                      <span className="font-semibold">اسم المستخدم: </span>
-                      {cust.username}
-                    </div>
-                    <div>
-                      <span className="font-semibold">الفئة: </span>
+                    <td className="py-3 px-4">{cust.name}</td>
+                    <td className="px-4">{cust.username}</td>
+                    <td className="px-4">
                       {{
                         retail: "تجزئة",
                         wholesale: "جملة",
                         superwholesale: "جملة كبرى",
                       }[cust.tier] || "غير معروف"}
-                    </div>
-                    <div>
-                      <span className="font-semibold">الدين الحالي: </span>
-                      {cust.totalDebt.toFixed(2)} د.ج
-                    </div>
-                    <div>
-                      <span className="font-semibold">
-                        المبلغ المراد تسويته:
-                      </span>
+                    </td>
+                    <td className="px-4">{cust.totalDebt.toFixed(2)} د.ج</td>
+                    <td className="px-4">
                       <input
                         type="number"
                         min="0"
                         step="0.01"
                         value={amounts[cust._id] || ""}
                         onChange={(e) =>
-                          setAmounts({ ...amounts, [cust._id]: e.target.value })
+                          setAmounts((prev) => ({
+                            ...prev,
+                            [cust._id]: e.target.value,
+                          }))
                         }
-                        className="border p-1 rounded w-full mt-1"
+                        className="w-24 border rounded p-1 text-left"
                       />
-                    </div>
-                    <button
-                      onClick={() => handleSettle(cust)}
-                      className="bg-green-600 text-white w-full py-1 rounded hover:bg-green-700 mt-2"
-                    >
-                      تسوية
-                    </button>
-                  </div>
+                    </td>
+                    <td className="px-4">
+                      <button
+                        onClick={() => handleSettle(cust)}
+                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded shadow transition"
+                      >
+                        تسوية
+                      </button>
+                    </td>
+                  </tr>
                 ))
               )}
-            </div>
+            </tbody>
+          </table>
+
+          {/* Mobile View */}
+          <div className="sm:hidden space-y-6">
+            {filteredCustomers.length === 0 ? (
+              <p className="text-center text-gray-500">لا يوجد عملاء لديهم ديون.</p>
+            ) : (
+              filteredCustomers.map((cust) => (
+                <div
+                  key={cust._id}
+                  className="bg-cyan-50 p-4 rounded-lg border border-cyan-200 shadow-sm space-y-3 text-sm"
+                >
+                  <div>
+                    <span className="font-semibold">الاسم: </span>
+                    {cust.name}
+                  </div>
+                  <div>
+                    <span className="font-semibold">اسم المستخدم: </span>
+                    {cust.username}
+                  </div>
+                  <div>
+                    <span className="font-semibold">الفئة: </span>
+                    {{
+                      retail: "تجزئة",
+                      wholesale: "جملة",
+                      superwholesale: "جملة كبرى",
+                    }[cust.tier] || "غير معروف"}
+                  </div>
+                  <div>
+                    <span className="font-semibold">الدين الحالي: </span>
+                    {cust.totalDebt.toFixed(2)} د.ج
+                  </div>
+                  <div>
+                    <span className="font-semibold">المبلغ المراد تسويته:</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={amounts[cust._id] || ""}
+                      onChange={(e) =>
+                        setAmounts((prev) => ({ ...prev, [cust._id]: e.target.value }))
+                      }
+                      className="mt-1 w-full p-2 border rounded"
+                    />
+                  </div>
+                  <button
+                    onClick={() => handleSettle(cust)}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded shadow transition"
+                  >
+                    تسوية
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </>
       )}
