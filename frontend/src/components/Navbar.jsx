@@ -149,12 +149,14 @@ const Navbar = () => {
           <div className="flex flex-col gap-3 mt-2">
             <Link
               to="/request-access"
+              onClick={() => setIsOpen(false)}
               className="border-2 border-cyan-600 hover:bg-cyan-600 hover:text-white text-cyan-700 dark:text-cyan-400 dark:border-cyan-400 dark:hover:bg-cyan-400 font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition"
             >
               طلب الوصول
             </Link>
             <Link
               to="/login"
+              onClick={() => setIsOpen(false)}
               className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition"
             >
               تسجيل الدخول
