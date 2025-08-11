@@ -1,17 +1,20 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "../services/axios";
-import Slider from "react-slick";
 import { scroller } from "react-scroll";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
+
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 const Home = () => {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
-  const sliderRef = useRef(null);
 
   // Fetch brands
   useEffect(() => {
@@ -40,13 +43,6 @@ const Home = () => {
       });
     }
   }, [location]);
-
-  // Force Slick recalculation on mount
-  useEffect(() => {
-    if (sliderRef.current) {
-      sliderRef.current.slickGoTo(0);
-    }
-  }, [brands]); // run when brands update (after loading)
 
   return (
     <div className="font-sans bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
@@ -143,45 +139,50 @@ const Home = () => {
             <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : brands.length > 0 ? (
-          <Slider
-            ref={sliderRef}
-            dots={false}
-            infinite
-            speed={600}
-            slidesToShow={3}
-            slidesToScroll={1}
-            autoplay
-            autoplaySpeed={2000}
-            arrows={false}
-            responsive={[
-              { breakpoint: 1024, settings: { slidesToShow: 2 } },
-              {
-                breakpoint: 640,
-                settings: { slidesToShow: 1, centerMode: true },
-              },
-            ]}
+          <Swiper
+            modules={[Autoplay, Pagination, Navigation]}
+            spaceBetween={20}
+            slidesPerView={1}
+            loop={true}
+            autoplay={{ delay: 2000, disableOnInteraction: false }}
+            breakpoints={{
+              640: { slidesPerView: 2 },
+              1024: { slidesPerView: 3 },
+            }}
+            navigation={false}
+            pagination={false}
           >
             {brands.map((brand) => (
-              <motion.div
-                key={brand._id}
-                whileHover={{ scale: 1.05 }}
-                className="p-4"
-              >
-                <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition">
-                  <div className="h-32 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
-                    <img
-                      src={brand.logo?.url}
-                      alt={brand.name}
-                      className="max-h-full max-w-full object-contain"
-                    />
+              <SwiperSlide key={brand._id}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="p-4"
+                >
+                  <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition">
+                    <div className="h-32 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
+                      <img
+                        src={
+                          brand.logo?.url?.startsWith("http")
+                            ? brand.logo.url
+                            : `${import.meta.env.VITE_API_URL}${
+                                brand.logo?.url || ""
+                              }`
+                        }
+                        alt={brand.name}
+                        className="max-h-full max-w-full object-contain"
+                      />
+                    </div>
+                    <p className="mt-4 text-center text-gray-700 dark:text-gray-300 font-medium">
+                      {brand.name}
+                    </p>
                   </div>
-                  <p className="mt-4 text-center text-gray-700 dark:text-gray-300 font-medium">
-                    {brand.name}
-                  </p>
-                </div>
-              </motion.div>
+                </motion.div>
+              </SwiperSlide>
             ))}
-          </Slider>
+          </Swiper>
         ) : (
           <p className="text-gray-500 dark:text-gray-400 text-center col-span-full">
             لا توجد علامات تجارية حالياً.
