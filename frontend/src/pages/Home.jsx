@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "../services/axios";
@@ -11,6 +11,7 @@ const Home = () => {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
+  const sliderRef = useRef(null);
 
   // Fetch brands
   useEffect(() => {
@@ -39,6 +40,13 @@ const Home = () => {
       });
     }
   }, [location]);
+
+  // Force Slick recalculation on mount
+  useEffect(() => {
+    if (sliderRef.current) {
+      sliderRef.current.slickGoTo(0);
+    }
+  }, [brands]); // run when brands update (after loading)
 
   return (
     <div className="font-sans bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
@@ -136,6 +144,7 @@ const Home = () => {
           </div>
         ) : brands.length > 0 ? (
           <Slider
+            ref={sliderRef}
             dots={false}
             infinite
             speed={600}
@@ -144,7 +153,6 @@ const Home = () => {
             autoplay
             autoplaySpeed={2000}
             arrows={false}
-            className=""
             responsive={[
               { breakpoint: 1024, settings: { slidesToShow: 2 } },
               {
