@@ -8,7 +8,8 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "build": "echo \"No build step needed for backend\"",
-    "postinstall": "npm install"
+    "lint": "echo \"🔧 Lint script not set up yet\"",
+    "test": "echo \"🚧 No tests defined yet\""
   },
   "keywords": [
     "express",
