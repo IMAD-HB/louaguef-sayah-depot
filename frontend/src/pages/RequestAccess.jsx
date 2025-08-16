@@ -160,9 +160,9 @@ const RequestAccess = () => {
                 required
               >
                 <option value="">اختر نوع النشاط</option>
-                <option value="محل">محل</option>
                 <option value="سوبر ماركت">سوبر ماركت</option>
-                <option value="مخزن">مخزن</option>
+                <option value="بائع بالجملة">بائع بالجملة</option>
+                <option value="موزع">موزع</option>
                 <option value="أخرى">أخرى</option>
               </select>
             </div>
