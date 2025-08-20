@@ -93,9 +93,21 @@ const ProductDetails = () => {
           </button>
           <input
             type="number"
-            className="w-14 text-center text-cyan-900 font-semibold outline-none"
+            className="w-14 text-center text-cyan-900 font-semibold outline-none no-arrows"
             value={quantity}
-            readOnly
+            onChange={(e) => {
+              let val = parseInt(e.target.value, 10);
+
+              if (isNaN(val)) {
+                setQuantity(1); // fallback when input is cleared
+              } else if (val < 1) {
+                setQuantity(1);
+              } else if (val > product.stock) {
+                setQuantity(product.stock);
+              } else {
+                setQuantity(val);
+              }
+            }}
           />
           <button
             onClick={() => handleQuantityChange(1)}
@@ -104,7 +116,9 @@ const ProductDetails = () => {
             +
           </button>
         </div>
-        <span className="text-sm text-cyan-600">(المتوفر: {product.stock})</span>
+        <span className="text-sm text-cyan-600">
+          (المتوفر: {product.stock})
+        </span>
       </div>
 
       <p className="text-lg text-cyan-800 mb-6">
