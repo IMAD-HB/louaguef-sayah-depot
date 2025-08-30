@@ -238,7 +238,7 @@ const Products = () => {
             onChange={handleChange}
             placeholder="سعر التجزئة"
             required
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded w-full no-arrows"
           />
           <input
             type="number"
@@ -247,7 +247,7 @@ const Products = () => {
             onChange={handleChange}
             placeholder="سعر الجملة"
             required
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded w-full no-arrows"
           />
           <input
             type="number"
@@ -256,7 +256,7 @@ const Products = () => {
             onChange={handleChange}
             placeholder="سعر الجملة الكبرى"
             required
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded w-full no-arrows"
           />
         </div>
 
@@ -279,7 +279,7 @@ const Products = () => {
             value={formData.stock}
             onChange={handleChange}
             placeholder="الكمية في المخزون"
-            className="border p-2 rounded w-24 text-center"
+            className="border p-2 rounded w-24 text-center no-arrows"
           />
           <button
             type="button"

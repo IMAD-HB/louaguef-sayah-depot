@@ -216,29 +216,40 @@ const EditOrder = () => {
                         {product.name} - {getUnitPrice(product)} دج (المخزون:{" "}
                         {product.stock})
                       </span>
-                      <div className="flex items-center border rounded px-2 ml-4">
+                      <div className="flex items-center border rounded px-2 ml-4 bg-white">
                         <button
                           type="button"
                           onClick={() =>
                             handleProductChange(product._id, quantity - 1)
                           }
-                          className="px-2 text-lg font-bold text-cyan-700"
+                          className="px-2 text-lg font-bold text-cyan-700 hover:text-cyan-900"
                           disabled={quantity <= 0}
                         >
                           −
                         </button>
                         <input
                           type="number"
-                          className="w-12 text-center outline-none"
+                          className="w-12 text-center outline-none no-arrows"
                           value={quantity}
-                          readOnly
+                          onChange={(e) => {
+                            let val = parseInt(e.target.value, 10);
+                            if (isNaN(val)) {
+                              handleProductChange(product._id, 1);
+                            } else if (val < 1) {
+                              handleProductChange(product._id, 1);
+                            } else if (val > product.stock) {
+                              handleProductChange(product._id, product.stock);
+                            } else {
+                              handleProductChange(product._id, val);
+                            }
+                          }}
                         />
                         <button
                           type="button"
                           onClick={() =>
                             handleProductChange(product._id, quantity + 1)
                           }
-                          className="px-2 text-lg font-bold text-cyan-700"
+                          className="px-2 text-lg font-bold text-cyan-700 hover:text-cyan-900"
                           disabled={quantity >= product.stock}
                         >
                           +

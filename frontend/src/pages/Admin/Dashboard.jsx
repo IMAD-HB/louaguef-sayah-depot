@@ -149,9 +149,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold text-cyan-700 mb-6">
-        إنشاء طلب جديد
-      </h1>
+      <h1 className="text-3xl font-bold text-cyan-700 mb-6">إنشاء طلب جديد</h1>
 
       <form
         onSubmit={handleSubmit}
@@ -272,9 +270,20 @@ const AdminDashboard = () => {
                         </button>
                         <input
                           type="number"
-                          className="w-12 text-center outline-none"
+                          className="w-12 text-center outline-none no-arrows"
                           value={quantity}
-                          readOnly
+                          onChange={(e) => {
+                            let val = parseInt(e.target.value, 10);
+                            if (isNaN(val)) {
+                              handleProductChange(product._id, 1);
+                            } else if (val < 1) {
+                              handleProductChange(product._id, 1);
+                            } else if (val > product.stock) {
+                              handleProductChange(product._id, product.stock);
+                            } else {
+                              handleProductChange(product._id, val);
+                            }
+                          }}
                         />
                         <button
                           type="button"
@@ -331,9 +340,20 @@ const AdminDashboard = () => {
                         </button>
                         <input
                           type="number"
-                          className="w-12 text-center outline-none"
+                          className="w-12 text-center outline-none no-arrows"
                           value={item.quantity}
-                          readOnly
+                          onChange={(e) => {
+                            let val = parseInt(e.target.value, 10);
+                            if (isNaN(val)) {
+                              handleProductChange(product._id, 1);
+                            } else if (val < 1) {
+                              handleProductChange(product._id, 1);
+                            } else if (val > product.stock) {
+                              handleProductChange(product._id, product.stock);
+                            } else {
+                              handleProductChange(product._id, val);
+                            }
+                          }}
                         />
                         <button
                           type="button"
