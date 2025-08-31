@@ -209,10 +209,10 @@ const Home = () => {
           <span className="block w-16 h-1 bg-cyan-500 mx-auto mt-2 rounded-full"></span>
         </h2>
         <p className="text-lg text-gray-700 dark:text-gray-300 mb-2">
-          📞 الهاتف: 123-456-789
+          📞 الهاتف: 0558147059
         </p>
         <p className="text-lg text-gray-700 dark:text-gray-300">
-          📍 العنوان: شارع المثال، المدينة
+          ✉️ البريد الإلكتروني: louaguefsidahmed@gmail.com
         </p>
       </section>
     </div>
