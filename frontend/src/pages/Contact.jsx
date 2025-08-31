@@ -7,8 +7,8 @@ const Contact = () => {
       <p className="text-gray-700 mb-4">
         يمكنك التواصل معنا عبر الطرق التالية:
       </p>
-      <p className="text-gray-800 font-semibold">📞 الهاتف: 0123456789</p>
-      <p className="text-gray-800 font-semibold">✉️ البريد الإلكتروني: info@depot.com</p>
+      <p className="text-gray-800 font-semibold">📞 الهاتف: 0558147059</p>
+      <p className="text-gray-800 font-semibold">✉️ البريد الإلكتروني: louaguefsidahmed@gmail.com</p>
     </div>
   );
 };
