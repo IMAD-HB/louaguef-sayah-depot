@@ -23,7 +23,7 @@ const CustomerProducts = () => {
           ]);
 
           const filteredProducts = productRes.data.filter(
-            (product) => product.brand?._id === brandId
+            (product) => product.brand?._id === brandId && product.stock > 0
           );
 
           setProducts(filteredProducts);
