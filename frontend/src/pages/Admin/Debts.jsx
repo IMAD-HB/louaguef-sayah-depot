@@ -13,6 +13,10 @@ const AdminDebtPage = () => {
   const fetchTimeout = useRef(null);
   const [loading, setLoading] = useState(true);
 
+  // ✅ New states for date search
+  const [selectedDate, setSelectedDate] = useState("");
+  const [settlements, setSettlements] = useState([]);
+
   const fetchCustomers = async () => {
     if (fetchTimeout.current) return;
 
@@ -47,6 +51,22 @@ const AdminDebtPage = () => {
       cust.username.toLowerCase().includes(q)
     );
   });
+
+  // ✅ Fetch settlements by date
+  const fetchSettlementsByDate = async (date) => {
+    if (!date) {
+      setSettlements([]);
+      return;
+    }
+
+    try {
+      const { data } = await axios.get(`/settlements?date=${date}`);
+      setSettlements(data);
+      if (data.length === 0) toast.info("لا توجد تسويات في هذا التاريخ");
+    } catch {
+      toast.error("فشل تحميل التسويات");
+    }
+  };
 
   const handleSettle = async (customer) => {
     const amount = parseFloat(amounts[customer._id]);
@@ -131,13 +151,30 @@ const AdminDebtPage = () => {
     <div className="p-6">
       <h1 className="text-3xl font-bold text-cyan-700 mb-6">ديون العملاء</h1>
 
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="ابحث بالاسم أو اسم المستخدم..."
-        className="w-full p-2 mb-6 border rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
-      />
+      {/* ✅ Date Search + Name Search */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+        <div className="flex items-center gap-2">
+          <label className="font-semibold text-cyan-700">بحث بالتاريخ:</label>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => {
+              const date = e.target.value;
+              setSelectedDate(date);
+              fetchSettlementsByDate(date);
+            }}
+            className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          />
+        </div>
+
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="ابحث بالاسم أو اسم المستخدم..."
+          className="w-full sm:w-1/2 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
+        />
+      </div>
 
       <div className="flex justify-end mb-6">
         <button
@@ -147,6 +184,68 @@ const AdminDebtPage = () => {
           تحميل تسويات اليوم
         </button>
       </div>
+
+      {/* ✅ Settlements by date (Responsive) */}
+      {selectedDate && settlements.length > 0 && (
+        <div className="mb-10">
+          <h2 className="text-2xl font-semibold text-cyan-700 mb-3">
+            التسويات بتاريخ {selectedDate}
+          </h2>
+
+          {/* Desktop Table */}
+          <table className="hidden sm:table w-full text-right border-collapse">
+            <thead>
+              <tr className="bg-cyan-50 border-b font-semibold text-cyan-700">
+                <th className="py-2 px-4">الاسم</th>
+                <th className="px-4">اسم المستخدم</th>
+                <th className="px-4">المبلغ</th>
+                <th className="px-4">الوقت</th>
+              </tr>
+            </thead>
+            <tbody>
+              {settlements.map((s, i) => (
+                <tr key={i} className="border-b hover:bg-cyan-50 transition">
+                  <td className="py-2 px-4">{s.name}</td>
+                  <td className="px-4">{s.username}</td>
+                  <td className="px-4">{s.amount.toFixed(2)} د.ج</td>
+                  <td className="px-4">
+                    {new Date(s.date).toLocaleTimeString("ar-DZ")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Mobile Cards */}
+          <div className="sm:hidden space-y-4">
+            {settlements.map((s, i) => (
+              <div
+                key={i}
+                className="bg-cyan-50 p-4 rounded-lg border border-cyan-200 shadow-sm space-y-2 text-sm"
+              >
+                <div>
+                  <span className="font-semibold text-cyan-700">الاسم: </span>
+                  {s.name}
+                </div>
+                <div>
+                  <span className="font-semibold text-cyan-700">
+                    اسم المستخدم:{" "}
+                  </span>
+                  {s.username}
+                </div>
+                <div>
+                  <span className="font-semibold text-cyan-700">المبلغ: </span>
+                  {s.amount.toFixed(2)} د.ج
+                </div>
+                <div>
+                  <span className="font-semibold text-cyan-700">الوقت: </span>
+                  {new Date(s.date).toLocaleTimeString("ar-DZ")}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex justify-center items-center py-10">
@@ -221,7 +320,9 @@ const AdminDebtPage = () => {
           {/* Mobile View */}
           <div className="sm:hidden space-y-6">
             {filteredCustomers.length === 0 ? (
-              <p className="text-center text-gray-500">لا يوجد عملاء لديهم ديون.</p>
+              <p className="text-center text-gray-500">
+                لا يوجد عملاء لديهم ديون.
+              </p>
             ) : (
               filteredCustomers.map((cust) => (
                 <div
@@ -256,7 +357,10 @@ const AdminDebtPage = () => {
                       step="0.01"
                       value={amounts[cust._id] || ""}
                       onChange={(e) =>
-                        setAmounts((prev) => ({ ...prev, [cust._id]: e.target.value }))
+                        setAmounts((prev) => ({
+                          ...prev,
+                          [cust._id]: e.target.value,
+                        }))
                       }
                       className="mt-1 w-full p-2 border rounded"
                     />

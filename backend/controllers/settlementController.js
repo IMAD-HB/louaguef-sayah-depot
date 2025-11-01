@@ -1,9 +1,23 @@
 import Settlement from "../models/Settlement.js";
 
-// ✅ GET all settlements
+// ✅ GET settlements (optionally by date)
 export const getSettlements = async (req, res) => {
   try {
-    const settlements = await Settlement.find().sort({ date: -1 });
+    const { date } = req.query;
+
+    // If no date is provided, return an empty array
+    if (!date) {
+      return res.json([]);
+    }
+
+    const start = new Date(date);
+    const end = new Date(date);
+    end.setDate(end.getDate() + 1);
+
+    const settlements = await Settlement.find({
+      date: { $gte: start, $lt: end },
+    }).sort({ date: -1 });
+
     res.json(settlements);
   } catch (err) {
     res.status(500).json({ error: "فشل في جلب التسويات" });
